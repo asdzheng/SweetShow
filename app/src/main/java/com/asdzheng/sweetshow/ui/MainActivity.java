@@ -18,11 +18,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
+import com.asdzheng.sweetshow.R;
+import com.asdzheng.sweetshow.bean.NewChannelInfoDetailDto;
+import com.asdzheng.sweetshow.bean.NewChannelInfoDto;
+import com.asdzheng.sweetshow.bean.UserInfo;
 import com.asdzheng.sweetshow.http.GsonRequest;
-import com.example.asdzheng.bean.NewChannelInfoDetailDto;
-import com.example.asdzheng.bean.NewChannelInfoDto;
-import com.example.asdzheng.bean.UserInfo;
-import com.example.asdzheng.testsame.R;
 
 import java.util.ArrayList;
 import java.util.List;

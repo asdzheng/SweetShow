@@ -31,7 +31,6 @@ public class GsonRequest<T> extends Request<T> {
         mListener = listener;
         mGson = new Gson();
         this.mClass =  mClass;
-
     }
 
     @Override
