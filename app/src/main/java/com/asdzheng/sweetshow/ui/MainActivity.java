@@ -1,8 +1,9 @@
 package com.asdzheng.sweetshow.ui;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
@@ -18,18 +19,21 @@ import com.asdzheng.sweetshow.bean.NewChannelInfoDetailDto;
 import com.asdzheng.sweetshow.bean.NewChannelInfoDto;
 import com.asdzheng.sweetshow.bean.UserInfo;
 import com.asdzheng.sweetshow.http.GsonRequest;
+import com.asdzheng.sweetshow.http.UrlUtil;
 import com.asdzheng.sweetshow.ui.adapter.PhotosAdapter;
 import com.asdzheng.sweetshow.utils.MeasUtils;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioLayoutManager;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioSpacingItemDecoration;
+import com.jude.easyrecyclerview.EasyRecyclerView;
+import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends AppCompatActivity implements RecyclerArrayAdapter.OnLoadMoreListener, SwipeRefreshLayout.OnRefreshListener{
 
 
-    private RecyclerView mRecyclerView;
+    private EasyRecyclerView mRecyclerView;
 
     UserInfo info;
 
@@ -39,6 +43,11 @@ public class MainActivity extends AppCompatActivity {
 
     private PhotosAdapter mPhotosAdapter;
 
+
+    private String channel = "/channel/1033563/senses";
+
+    private String nextStr = "";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -46,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
+        mRecyclerView = (EasyRecyclerView) findViewById(R.id.recycler);
 
         queue = Volley.newRequestQueue(this);
 
@@ -54,31 +63,40 @@ public class MainActivity extends AppCompatActivity {
 
         setupRecyclerView();
 
-        GsonRequest<NewChannelInfoDto> request = new GsonRequest<>(Request.Method.GET, "http://v2.same.com/channel/1033563/senses", NewChannelInfoDto.class, new Response.Listener<NewChannelInfoDto>() {
-
-            @Override
-            public void onResponse(NewChannelInfoDto response) {
-                if(response.getData().getResults() != null) {
-                    mPhotosAdapter.bind(response.getData().getResults());
-                }
-            }
-        }, new Response.ErrorListener() {
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                Log.w("main", error.toString());
-            }
-        } );
+        GsonRequest<NewChannelInfoDto> request = requestData("");
 
         queue.add(request);
 
 
     }
 
+    @NonNull
+    private GsonRequest<NewChannelInfoDto> requestData(String next) {
+        return new GsonRequest<>(Request.Method.GET, UrlUtil.getBaseUrl(channel, next), NewChannelInfoDto.class, new Response.Listener<NewChannelInfoDto>() {
+
+                @Override
+                public void onResponse(NewChannelInfoDto response) {
+                    if(response.getData().getResults() != null) {
+                        mPhotosAdapter.addAll(response.getData().getResults());
+                    }
+
+                    nextStr = response.getData().getNext();
+                }
+            }, new Response.ErrorListener() {
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    Log.w("main", error.toString());
+                }
+            } );
+    }
+
     private void setupRecyclerView() {
-        this.mPhotosAdapter = new PhotosAdapter(list);
+        this.mPhotosAdapter = new PhotosAdapter(this);
         this.mRecyclerView.setAdapter(mPhotosAdapter);
         final AspectRatioLayoutManager layoutManager = new AspectRatioLayoutManager(mPhotosAdapter);
         this.mRecyclerView.setLayoutManager(layoutManager);
+        mPhotosAdapter.setMore(R.layout.view_more, this);
+        mPhotosAdapter.setNoMore(R.layout.view_nomore);
         layoutManager.setMaxRowHeight(getResources().getDisplayMetrics().heightPixels / 3);
         this.mRecyclerView.addItemDecoration(new AspectRatioSpacingItemDecoration(MeasUtils.dpToPx(4.0f, this)));
     }
@@ -103,5 +121,15 @@ public class MainActivity extends AppCompatActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onLoadMore() {
+        requestData(nextStr);
+    }
+
+    @Override
+    public void onRefresh() {
+        requestData("");
     }
 }

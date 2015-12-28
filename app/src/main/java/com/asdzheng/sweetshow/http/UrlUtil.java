@@ -4,7 +4,7 @@ package com.asdzheng.sweetshow.http;
  * Created by asdzheng on 2015/12/25.
  */
 public class UrlUtil {
-    private String base_url = "https://v2.same.com";
+    private static String base_url = "https://v2.same.com";
 
     public static final String CHANNEL_BOOK_STATE = "/channel/%s/booked/state.json";
     public static final String CHANNEL_DETAIL = "/channel/%s/detail";
@@ -31,5 +31,9 @@ public class UrlUtil {
     public static final String USER_REPORT_MUSIC_PLAY = "/song/%s/play";
     public static final String USER_SENSES = "/user/%s/senses";
     public static final String USER_WRITE_CHANNELS = "/user/%s/channels/write?_2";
+
+    public static String getBaseUrl(String type, String next) {
+        return new StringBuilder(base_url).append(type).append(next).toString();
+    }
 
 }

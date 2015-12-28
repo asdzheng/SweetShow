@@ -29,5 +29,6 @@ dependencies {
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.squareup.okhttp:okhttp:2.7.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.5.0'
+    compile 'com.jude:easyrecyclerview:3.2.3'
 
 }
