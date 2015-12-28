@@ -8,6 +8,7 @@ import com.android.volley.ParseError;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.toolbox.HttpHeaderParser;
+import com.asdzheng.sweetshow.utils.LogUtil;
 import com.google.gson.Gson;
 
 import java.io.UnsupportedEncodingException;
@@ -28,6 +29,7 @@ public class GsonRequest<T> extends Request<T> {
 
     public GsonRequest(int method, String url, Class mClass,  Response.Listener<T> listener, Response.ErrorListener errorListener) {
         super(method, url, errorListener);
+        LogUtil.i(TAG, url);
         mListener = listener;
         mGson = new Gson();
         this.mClass =  mClass;

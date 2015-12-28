@@ -2,6 +2,7 @@ package com.asdzheng.sweetshow.imageloaders;
 
 import android.content.Context;
 import android.support.annotation.DrawableRes;
+import android.util.ArrayMap;
 import android.widget.ImageView;
 
 import com.asdzheng.sweetshow.MyApplication;
@@ -39,6 +40,10 @@ public class ShowImageLoader {
         this.mImageLoader.load(this.mContext, s, imageView, n);
     }
 
+    public void fetchImageForSize(final ShowImageLoader.AspectRatios ratios, final String... imageUrls) {
+        this.mImageLoader.fetchImageForSize(mContext, ratios, imageUrls);
+    }
+
 //    public void loadImageForPhotoAtSize(final Photo photo, final int n, final ImageView imageView) {
 //        this.load(photo.getImageUrlForSize(n), imageView);
 //    }
@@ -73,5 +78,9 @@ public class ShowImageLoader {
 
     public void setImageLoader(final ImageLoader mImageLoader) {
         this.mImageLoader = mImageLoader;
+    }
+
+    public interface AspectRatios {
+        void getAspectRatios(ArrayMap<String, Double> ratios);
     }
 }

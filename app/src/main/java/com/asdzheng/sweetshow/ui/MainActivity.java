@@ -2,16 +2,11 @@ package com.asdzheng.sweetshow.ui;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.view.ViewGroup;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
-import android.widget.ImageView;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -23,6 +18,10 @@ import com.asdzheng.sweetshow.bean.NewChannelInfoDetailDto;
 import com.asdzheng.sweetshow.bean.NewChannelInfoDto;
 import com.asdzheng.sweetshow.bean.UserInfo;
 import com.asdzheng.sweetshow.http.GsonRequest;
+import com.asdzheng.sweetshow.ui.adapter.PhotosAdapter;
+import com.asdzheng.sweetshow.utils.MeasUtils;
+import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioLayoutManager;
+import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioSpacingItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -30,15 +29,15 @@ import java.util.List;
 public class MainActivity extends AppCompatActivity {
 
 
-    GridView gridView;
+    private RecyclerView mRecyclerView;
 
     UserInfo info;
 
     RequestQueue queue;
 
-    ImageAdapter adapter;
-
     List<NewChannelInfoDetailDto> list;
+
+    private PhotosAdapter mPhotosAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,23 +46,20 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        gridView = (GridView) findViewById(R.id.gv_test);
+        mRecyclerView = (RecyclerView) findViewById(R.id.recycler);
 
         queue = Volley.newRequestQueue(this);
 
         list = new ArrayList<>();
 
-        adapter = new ImageAdapter(list);
-
-        gridView.setAdapter(adapter);
+        setupRecyclerView();
 
         GsonRequest<NewChannelInfoDto> request = new GsonRequest<>(Request.Method.GET, "http://v2.same.com/channel/1033563/senses", NewChannelInfoDto.class, new Response.Listener<NewChannelInfoDto>() {
 
             @Override
             public void onResponse(NewChannelInfoDto response) {
                 if(response.getData().getResults() != null) {
-//                    list.addAll(response.getData().getResults());
-                    adapter.addAll(response.getData().getResults());
+                    mPhotosAdapter.bind(response.getData().getResults());
                 }
             }
         }, new Response.ErrorListener() {
@@ -78,56 +74,13 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-    public class ImageAdapter extends BaseAdapter {
-
-        List<NewChannelInfoDetailDto> results;
-
-        public ImageAdapter(List<NewChannelInfoDetailDto> results) {
-            this.results = results;
-        }
-
-        @Override
-        public int getCount() {
-            return results.size();
-        }
-
-        @Override
-        public Object getItem(int position) {
-            return results.get(position);
-        }
-
-        @Override
-        public long getItemId(int position) {
-            return position;
-        }
-
-        public void addAll(List<NewChannelInfoDetailDto> list) {
-            results.addAll(list);
-            notifyDataSetChanged();
-        }
-
-        @Override
-        public View getView(int position, View convertView, ViewGroup parent) {
-            ViewHolder holder ;
-            if(convertView == null) {
-                convertView = LayoutInflater.from(MainActivity.this).inflate(R.layout.adapter, null);
-                holder = new ViewHolder();
-                holder.iv = (ImageView) convertView.findViewById(R.id.iv);
-                convertView.setTag(holder);
-            } else {
-                holder = (ViewHolder) convertView.getTag();
-            }
-
-            Log.i(" imageUrl ", results.get(position).photo + "");
-
-            com.nostra13.universalimageloader.core.ImageLoader.getInstance().displayImage(results.get(position).photo, holder.iv);
-            return convertView;
-        }
-
-         class ViewHolder {
-            ImageView iv;
-        }
+    private void setupRecyclerView() {
+        this.mPhotosAdapter = new PhotosAdapter(list);
+        this.mRecyclerView.setAdapter(mPhotosAdapter);
+        final AspectRatioLayoutManager layoutManager = new AspectRatioLayoutManager(mPhotosAdapter);
+        this.mRecyclerView.setLayoutManager(layoutManager);
+        layoutManager.setMaxRowHeight(getResources().getDisplayMetrics().heightPixels / 3);
+        this.mRecyclerView.addItemDecoration(new AspectRatioSpacingItemDecoration(MeasUtils.dpToPx(4.0f, this)));
     }
 
     @Override

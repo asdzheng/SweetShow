@@ -15,4 +15,6 @@ public interface ImageLoader {
     void load(Context context, String imageUrl, ImageView imageView, @DrawableRes int drawable);
 
     void prefetch(Context context, String... imageUrls);
+
+    void fetchImageForSize(Context context, final ShowImageLoader.AspectRatios ratios, final String... imageUrls);
 }
