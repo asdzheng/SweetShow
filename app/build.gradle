@@ -30,5 +30,7 @@ dependencies {
     compile 'com.squareup.okhttp:okhttp:2.7.0'
     compile 'com.squareup.okhttp:okhttp-urlconnection:2.5.0'
     compile 'com.jude:easyrecyclerview:3.2.3'
-
+    compile 'com.marshalchen.ultimaterecyclerview:library:0.3.18'
+    compile 'com.github.Aspsine:SwipeToLoadLayout:v1.0.1'
+    compile 'com.lsjwzh:materialloadingprogressbar:0.5.8-RELEASE'
 }

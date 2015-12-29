@@ -32,8 +32,8 @@ public class UrlUtil {
     public static final String USER_SENSES = "/user/%s/senses";
     public static final String USER_WRITE_CHANNELS = "/user/%s/channels/write?_2";
 
-    public static String getBaseUrl(String type, String next) {
-        return new StringBuilder(base_url).append(type).append(next).toString();
+    public static String getBaseUrl(String next) {
+        return base_url + next;
     }
 
 }

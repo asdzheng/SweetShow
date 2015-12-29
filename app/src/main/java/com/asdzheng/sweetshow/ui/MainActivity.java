@@ -2,9 +2,8 @@ package com.asdzheng.sweetshow.ui;
 
 import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -22,18 +21,21 @@ import com.asdzheng.sweetshow.http.GsonRequest;
 import com.asdzheng.sweetshow.http.UrlUtil;
 import com.asdzheng.sweetshow.ui.adapter.PhotosAdapter;
 import com.asdzheng.sweetshow.utils.MeasUtils;
+import com.asdzheng.sweetshow.utils.StringUtil;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioLayoutManager;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioSpacingItemDecoration;
-import com.jude.easyrecyclerview.EasyRecyclerView;
-import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
+import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
+import com.aspsine.swipetoloadlayout.OnRefreshListener;
+import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MainActivity extends AppCompatActivity implements RecyclerArrayAdapter.OnLoadMoreListener, SwipeRefreshLayout.OnRefreshListener{
+public class MainActivity extends AppCompatActivity implements OnRefreshListener, OnLoadMoreListener {
 
 
-    private EasyRecyclerView mRecyclerView;
+    private RecyclerView mRecyclerView;
+    private SwipeToLoadLayout swipeToLoadLayout;
 
     UserInfo info;
 
@@ -43,19 +45,17 @@ public class MainActivity extends AppCompatActivity implements RecyclerArrayAdap
 
     private PhotosAdapter mPhotosAdapter;
 
-
-    private String channel = "/channel/1033563/senses";
-
-    private String nextStr = "";
+    private String nextStr = "/channel/1033563/senses";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+//        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+//        setSupportActionBar(toolbar);
 
-        mRecyclerView = (EasyRecyclerView) findViewById(R.id.recycler);
+        mRecyclerView = (RecyclerView) findViewById(R.id.swipe_target);
+        swipeToLoadLayout = (SwipeToLoadLayout) findViewById(R.id.swipeToLoadLayout);
 
         queue = Volley.newRequestQueue(this);
 
@@ -63,40 +63,55 @@ public class MainActivity extends AppCompatActivity implements RecyclerArrayAdap
 
         setupRecyclerView();
 
-        GsonRequest<NewChannelInfoDto> request = requestData("");
-
-        queue.add(request);
 
 
+        swipeToLoadLayout.post(new Runnable() {
+            @Override
+            public void run() {
+                swipeToLoadLayout.setRefreshing(true);
+            }
+        });
+
+        requestData(nextStr);
     }
 
     @NonNull
-    private GsonRequest<NewChannelInfoDto> requestData(String next) {
-        return new GsonRequest<>(Request.Method.GET, UrlUtil.getBaseUrl(channel, next), NewChannelInfoDto.class, new Response.Listener<NewChannelInfoDto>() {
+    private void requestData(final String next) {
+        GsonRequest<NewChannelInfoDto> request = new GsonRequest<>(Request.Method.GET, UrlUtil.getBaseUrl(next), NewChannelInfoDto.class, new Response.Listener<NewChannelInfoDto>() {
 
                 @Override
                 public void onResponse(NewChannelInfoDto response) {
                     if(response.getData().getResults() != null) {
-                        mPhotosAdapter.addAll(response.getData().getResults());
+                        mPhotosAdapter.bind(response.getData().getResults());
                     }
-
                     nextStr = response.getData().getNext();
+                    if(StringUtil.isEmpty(next)) {
+                        swipeToLoadLayout.setRefreshing(false);
+                    } else {
+                        swipeToLoadLayout.setLoadingMore(false);
+                    }
                 }
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
                     Log.w("main", error.toString());
+                    swipeToLoadLayout.setRefreshing(false);
+                    swipeToLoadLayout.setLoadingMore(false);
+
                 }
             } );
+
+        queue.add(request);
     }
 
     private void setupRecyclerView() {
-        this.mPhotosAdapter = new PhotosAdapter(this);
+        swipeToLoadLayout.setOnRefreshListener(this);
+        swipeToLoadLayout.setOnLoadMoreListener(this);
+
+        this.mPhotosAdapter = new PhotosAdapter(list);
         this.mRecyclerView.setAdapter(mPhotosAdapter);
         final AspectRatioLayoutManager layoutManager = new AspectRatioLayoutManager(mPhotosAdapter);
         this.mRecyclerView.setLayoutManager(layoutManager);
-        mPhotosAdapter.setMore(R.layout.view_more, this);
-        mPhotosAdapter.setNoMore(R.layout.view_nomore);
         layoutManager.setMaxRowHeight(getResources().getDisplayMetrics().heightPixels / 3);
         this.mRecyclerView.addItemDecoration(new AspectRatioSpacingItemDecoration(MeasUtils.dpToPx(4.0f, this)));
     }

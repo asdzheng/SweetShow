@@ -1,6 +1,5 @@
 package com.asdzheng.sweetshow.ui.adapter;
 
-import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.ArrayMap;
@@ -12,32 +11,30 @@ import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
 import com.asdzheng.sweetshow.ui.view.PhotoView;
 import com.asdzheng.sweetshow.utils.StringUtil;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioLayoutSizeCalculator;
-import com.jude.easyrecyclerview.adapter.BaseViewHolder;
-import com.jude.easyrecyclerview.adapter.RecyclerArrayAdapter;
 
 import java.util.List;
 
 /**
  * Created by asdzheng on 2015/12/28.
  */
-public class PhotosAdapter extends RecyclerArrayAdapter<NewChannelInfoDetailDto> implements AspectRatioLayoutSizeCalculator.SizeCalculatorDelegate {
+public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewHolder> implements AspectRatioLayoutSizeCalculator.SizeCalculatorDelegate {
     protected static final int INVALID_ITEM_POSITION = -1;
     private List<NewChannelInfoDetailDto> mPhotos;
 
 
     private ArrayMap<String, Double> photoAspectRatios;
 
-    public PhotosAdapter(Context context) {
-        super(context);
-    }
+//    public PhotosAdapter(Context context) {
+//        super(context);
+//    }
 
 //    public PhotosAdapter() {
 //        this();
 //    }
 
-//    public PhotosAdapter(List<NewChannelInfoDetailDto> mPhotos) {
-//        this.mPhotos = mPhotos;
-//    }
+    public PhotosAdapter(List<NewChannelInfoDetailDto> mPhotos) {
+        this.mPhotos = mPhotos;
+    }
 
     private void prefetchPhotos(@NonNull final List<String> list) {
         ShowImageLoader.getSharedInstance().prefetch(list);
@@ -45,9 +42,8 @@ public class PhotosAdapter extends RecyclerArrayAdapter<NewChannelInfoDetailDto>
 
     @Override
     public double aspectRatioForIndex(final int n) {
-
-        if (n < getCount()) {
-            final NewChannelInfoDetailDto info = getItem(n);
+        if (n < getItemCount()) {
+            final NewChannelInfoDetailDto info = mPhotos.get(n);
             double ratio = StringUtil.getAspectRadioFromUrl(info.photo);
             return ratio;
         }
@@ -80,9 +76,20 @@ public class PhotosAdapter extends RecyclerArrayAdapter<NewChannelInfoDetailDto>
         ((RecyclerView.Adapter) this).notifyItemRangeInserted(size, list.size());
     }
 
+
     @Override
-    public BaseViewHolder OnCreateViewHolder(ViewGroup parent, int viewType) {
-        return new PhotoViewHolder(new PhotoView(getContext()));
+    public PhotoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
+        return new PhotoViewHolder(new PhotoView(parent.getContext()));
+    }
+
+    @Override
+    public void onBindViewHolder(PhotoViewHolder holder, int position) {
+        ((PhotoView) holder.itemView).bind(this.mPhotos.get(position).photo);
+    }
+
+    @Override
+    public int getItemCount() {
+        return this.mPhotos.size();
     }
 
 //    @Override
@@ -129,23 +136,12 @@ public class PhotosAdapter extends RecyclerArrayAdapter<NewChannelInfoDetailDto>
 //        void onPhotoLongPressListener(View p0, Photo p1, int p2);
 //    }
 
-    public class PhotoViewHolder extends BaseViewHolder<NewChannelInfoDetailDto>
+    public class PhotoViewHolder extends RecyclerView.ViewHolder
     {
-
-        PhotoView photo;
-
-
         public PhotoViewHolder(final View view) {
             super(view);
-            photo = (PhotoView)view;
         }
 
-        @Override
-        public void setData(NewChannelInfoDetailDto data) {
-            super.setData(data);
-
-            photo.bind(data.photo);
-        }
     }
 
     public ArrayMap<String, Double> getPhotoAspectRatios() {
