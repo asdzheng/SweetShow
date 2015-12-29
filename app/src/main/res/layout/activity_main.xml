@@ -1,35 +1,32 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<com.asdzheng.sweetshow.ui.view.swipelayout.SwipeToLoadLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/swipeToLoadLayout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:fitsSystemWindows="true"
-    tools:context=".ui.MainActivity">
+    android:background="@color/style_window_background"
+    app:swipe_style="classic">
 
-    <android.support.design.widget.AppBarLayout
+    <include
+        android:id="@id/swipe_refresh_header"
+        layout="@layout/layout_twitter_header" />
+
+    <android.support.v7.widget.RecyclerView
+        android:id="@id/swipe_target"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:theme="@style/AppTheme.AppBarOverlay">
+        android:layout_height="match_parent"
+        android:clipToPadding="false" />
 
-        <android.support.v7.widget.Toolbar
-            android:id="@+id/toolbar"
-            android:layout_width="match_parent"
-            android:layout_height="?attr/actionBarSize"
-            android:background="?attr/colorPrimary"
-            app:popupTheme="@style/AppTheme.PopupOverlay"
-            app:layout_scrollFlags="scroll|enterAlways"
-            />
+    <include
+        android:id="@id/swipe_load_more_footer"
+        layout="@layout/layout_classic_footer" />
 
-    </android.support.design.widget.AppBarLayout>
-
-    <com.jude.easyrecyclerview.EasyRecyclerView
-        android:id="@+id/recycler"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        app:layout_behavior="@string/appbar_scrolling_view_behavior"
-        app:layout_empty="@layout/view_empty"
-        app:layout_progress="@layout/view_progress"
-        />
-
-</android.support.design.widget.CoordinatorLayout>
+</com.asdzheng.sweetshow.ui.view.swipelayout.SwipeToLoadLayout>
+    <!--app:default_to_loading_more_scrolling_duration="500"-->
+    <!--app:default_to_refreshing_scrolling_duration="1000"-->
+    <!--app:load_more_complete_delay_duration="0"-->
+    <!--app:load_more_final_drag_offset="@dimen/load_more_final_offset_google"-->
+    <!--app:load_more_trigger_offset="@dimen/load_more_trigger_offset_google"-->
+    <!--app:refresh_complete_delay_duration="0"-->
+    <!--app:refresh_final_drag_offset="@dimen/refresh_final_offset_google"-->
+    <!--app:refresh_trigger_offset="@dimen/refresh_trigger_offset_google"-->

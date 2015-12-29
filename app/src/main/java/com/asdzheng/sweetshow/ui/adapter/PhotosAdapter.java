@@ -51,7 +51,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewH
     }
 
     public void bind(@NonNull final List<NewChannelInfoDetailDto> mPhotos) {
-        this.mPhotos = mPhotos;
+        this.mPhotos.addAll(mPhotos);
 
 //        String[] urls = new String[mPhotos.size()];
 //        for (int i = 0; i < mPhotos.size(); i++) {
@@ -67,7 +67,11 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewH
 //            }
 //        }, urls);
         notifyDataSetChanged();
+    }
 
+    public void clear() {
+        mPhotos.clear();
+        notifyDataSetChanged();
     }
 
     public void bindNext(@NonNull final List<NewChannelInfoDetailDto> list) {

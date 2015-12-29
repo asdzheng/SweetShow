@@ -21,7 +21,9 @@ public class PicassoImageLoader implements ImageLoader {
 
     @Override
     public void configure(final Context context) {
-        Picasso.setSingletonInstance(new Picasso.Builder(context.getApplicationContext()).downloader(new OkHttpDownloader(context.getApplicationContext(), PICASSO_DISK_CACHE_SIZE)).build());
+        Picasso.setSingletonInstance(new Picasso.Builder(context.getApplicationContext()).
+                downloader(new OkHttpDownloader(context.getApplicationContext(), PICASSO_DISK_CACHE_SIZE)).defaultBitmapConfig(Bitmap.Config.RGB_565).
+                build());
     }
 
     @Override

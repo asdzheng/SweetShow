@@ -20,18 +20,19 @@ import com.asdzheng.sweetshow.bean.UserInfo;
 import com.asdzheng.sweetshow.http.GsonRequest;
 import com.asdzheng.sweetshow.http.UrlUtil;
 import com.asdzheng.sweetshow.ui.adapter.PhotosAdapter;
+import com.asdzheng.sweetshow.ui.view.swipelayout.OnLoadMoreListener;
+import com.asdzheng.sweetshow.ui.view.swipelayout.OnRefreshListener;
+import com.asdzheng.sweetshow.ui.view.swipelayout.SwipeToLoadLayout;
 import com.asdzheng.sweetshow.utils.MeasUtils;
-import com.asdzheng.sweetshow.utils.StringUtil;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioLayoutManager;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioSpacingItemDecoration;
-import com.aspsine.swipetoloadlayout.OnLoadMoreListener;
-import com.aspsine.swipetoloadlayout.OnRefreshListener;
-import com.aspsine.swipetoloadlayout.SwipeToLoadLayout;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainActivity extends AppCompatActivity implements OnRefreshListener, OnLoadMoreListener {
+
+    public static final String SEXY_CHANNEL = "/channel/1033563/senses";
 
 
     private RecyclerView mRecyclerView;
@@ -41,11 +42,13 @@ public class MainActivity extends AppCompatActivity implements OnRefreshListener
 
     RequestQueue queue;
 
+    int page =1;
+
     List<NewChannelInfoDetailDto> list;
 
     private PhotosAdapter mPhotosAdapter;
 
-    private String nextStr = "/channel/1033563/senses";
+    private String nextStr = SEXY_CHANNEL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -62,8 +65,6 @@ public class MainActivity extends AppCompatActivity implements OnRefreshListener
         list = new ArrayList<>();
 
         setupRecyclerView();
-
-
 
         swipeToLoadLayout.post(new Runnable() {
             @Override
@@ -82,14 +83,21 @@ public class MainActivity extends AppCompatActivity implements OnRefreshListener
                 @Override
                 public void onResponse(NewChannelInfoDto response) {
                     if(response.getData().getResults() != null) {
-                        mPhotosAdapter.bind(response.getData().getResults());
+                        if(page == 1) {
+                            mPhotosAdapter.clear();
+                            mPhotosAdapter.bind(response.getData().getResults());
+                        } else {
+                            mPhotosAdapter.bind(response.getData().getResults());
+                        }
                     }
                     nextStr = response.getData().getNext();
-                    if(StringUtil.isEmpty(next)) {
+                    if(page == 1) {
                         swipeToLoadLayout.setRefreshing(false);
                     } else {
                         swipeToLoadLayout.setLoadingMore(false);
                     }
+
+                    page++;
                 }
             }, new Response.ErrorListener() {
                 @Override
@@ -145,6 +153,8 @@ public class MainActivity extends AppCompatActivity implements OnRefreshListener
 
     @Override
     public void onRefresh() {
-        requestData("");
+        page = 1;
+        nextStr = SEXY_CHANNEL;
+        requestData(nextStr);
     }
 }
