@@ -21,23 +21,16 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewH
     protected static final int INVALID_ITEM_POSITION = -1;
     private List<NewChannelInfoDetailDto> mPhotos;
 
-
     private ArrayMap<String, Double> photoAspectRatios;
-
-//    public PhotosAdapter(Context context) {
-//        super(context);
-//    }
-
-//    public PhotosAdapter() {
-//        this();
-//    }
 
     public PhotosAdapter(List<NewChannelInfoDetailDto> mPhotos) {
         this.mPhotos = mPhotos;
     }
 
+
     private void prefetchPhotos(@NonNull final List<String> list) {
         ShowImageLoader.getSharedInstance().prefetch(list);
+
     }
 
     @Override
@@ -96,31 +89,6 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewH
         return this.mPhotos.size();
     }
 
-//    @Override
-//    public int getItemCount() {
-//        return this.mPhotos.size();
-//    }
-
-//    public int getPositionForPhoto(final int n) {
-//        int n2 = -1;
-//        for (int i = 0; i < this.mPhotos.size(); ++i) {
-//            if (this.mPhotos.get(i).getId() == n) {
-//                n2 = i;
-//                break;
-//            }
-//        }
-//        return n2;
-//    }
-
-//    @Override
-//    public void onBindViewHolder(final PhotoViewHolder photoViewHolder, final int n) {
-//        ((PhotoView) photoViewHolder.itemView).bind(this.mPhotos.get(n).photo);
-//    }
-
-//    @Override
-//    public PhotoViewHolder onCreateViewHolder(final ViewGroup viewGroup, final int n) {
-//        return new PhotoViewHolder(new PhotoView(viewGroup.getContext()));
-//    }
 
 //    public void setOnPhotoClickListener(final OnPhotoClickListener mOnPhotoClickListener) {
 //        this.mOnPhotoClickListener = mOnPhotoClickListener;

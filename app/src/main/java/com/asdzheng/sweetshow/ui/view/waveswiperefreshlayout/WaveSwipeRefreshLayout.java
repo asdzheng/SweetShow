@@ -22,7 +22,6 @@ import android.view.animation.Transformation;
 import android.widget.AbsListView;
 import android.widget.ScrollView;
 
-import com.asdzheng.sweetshow.utils.LogUtil;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioLayoutManager;
 
 
@@ -782,8 +781,8 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
                 if(recyclerView.getLayoutManager() instanceof AspectRatioLayoutManager) {
                     //这里还需计最后一个可见的未知是否小于最后一个位置
                     AspectRatioLayoutManager layoutManager = (AspectRatioLayoutManager) recyclerView.getLayoutManager();
-                    LogUtil.i(LOG_TAG, "getmLastVisiblePosition " + layoutManager.getmLastVisiblePosition() + " | getItemCount "  + recyclerView.getAdapter().getItemCount());
-                    LogUtil.i(LOG_TAG, " layoutManager layoutDecodeBottom " + layoutManager.getDecoratedBottom(recyclerView.getChildAt(recyclerView.getChildCount() - 1)) + " | getMeasuredHeight "+ recyclerView.getMeasuredHeight());
+//                    LogUtil.i(LOG_TAG, "getmLastVisiblePosition " + layoutManager.getmLastVisiblePosition() + " | getItemCount "  + recyclerView.getAdapter().getItemCount());
+//                    LogUtil.i(LOG_TAG, " layoutManager layoutDecodeBottom " + layoutManager.getDecoratedBottom(recyclerView.getChildAt(recyclerView.getChildCount() - 1)) + " | getMeasuredHeight "+ recyclerView.getMeasuredHeight());
                     return recyclerView.getChildCount() > 0
                             && (layoutManager.getmLastVisiblePosition() < recyclerView.getAdapter().getItemCount() - 1 ||
                             layoutManager.getDecoratedBottom(recyclerView.getChildAt(recyclerView.getChildCount() - 1)) > recyclerView.getPaddingBottom() + recyclerView.getMeasuredHeight());
@@ -921,7 +920,7 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
 
                 final float y = MotionEventCompat.getY(ev, pointerIndex);
                 final float overscrollTop = (y - mInitialMotionY) * DRAG_RATE;
-                if (mIsBeingDragged) {
+                if (mIsBeingDragged && !mLoading) {
                     mProgress.showArrow(true);
                     float originalDragPercent = overscrollTop / mTotalDragDistance;
                     if (originalDragPercent < 0) {
@@ -973,7 +972,8 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
                             true /* requires update */);
                 }
 
-                if(mLoading){
+                //是否显示下加载更多的波浪动画
+                if(mLoading && !mRefreshing){
                     if (mWaterWave.getVisibility() != View.VISIBLE) {
                         setLoading(mLoading);
                     }

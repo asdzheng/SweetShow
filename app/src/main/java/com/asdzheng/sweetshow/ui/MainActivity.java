@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
@@ -105,6 +106,7 @@ public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshL
             }, new Response.ErrorListener() {
                 @Override
                 public void onErrorResponse(VolleyError error) {
+                    Toast.makeText(MainActivity.this, "网络连接错误", Toast.LENGTH_SHORT).show();
                     Log.w("main", error.toString());
                     waveSwipeRefreshLayout.setRefreshing(false);
                     waveSwipeRefreshLayout.setLoading(false);
