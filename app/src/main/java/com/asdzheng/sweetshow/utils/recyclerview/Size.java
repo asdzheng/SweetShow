@@ -20,4 +20,9 @@ public class Size
     public int getWidth() {
         return this.width;
     }
+
+    @Override
+    public String toString() {
+        return "withd = " + width + " | height = " + height;
+    }
 }

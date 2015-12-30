@@ -5,6 +5,7 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 
+import com.asdzheng.sweetshow.ui.view.PhotoView;
 import com.asdzheng.sweetshow.utils.LogUtil;
 
 /**
@@ -103,10 +104,28 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
             final View view = (View) sparseArray.get(mFirstVisiblePosition);
             if (view == null) {
                 final View viewForPosition = recycler.getViewForPosition(mFirstVisiblePosition);
+                if(viewForPosition instanceof PhotoView) {
+                    LogUtil.w(TAG, "view == null view is photo");
+
+                    PhotoView photoView = (PhotoView) viewForPosition;
+                    photoView.setSize(sizeForChildAtPosition);
+                }
+
+               LogUtil.i(TAG, "view == null mFirstVisiblePosition = " + mFirstVisiblePosition + " | sizeForChildAtPosition = " + sizeForChildAtPosition );
+
+
                 addView(viewForPosition);
                 measureChildWithMargins(viewForPosition, 0, 0);
                 layoutDecorated(viewForPosition, childPaddingLeft, childPaddingTop, childPaddingLeft + sizeForChildAtPosition.getWidth(), childPaddingTop + sizeForChildAtPosition.getHeight());
             } else {
+                if(view instanceof PhotoView) {
+                    LogUtil.w(TAG, "view != null view is photo");
+                    PhotoView photoView = (PhotoView) view;
+                    photoView.setSize(sizeForChildAtPosition);
+                }
+
+                LogUtil.i(TAG, "view != null mFirstVisiblePosition = " + mFirstVisiblePosition + " | sizeForChildAtPosition = " + sizeForChildAtPosition );
+
                 attachView(view);
                 sparseArray.remove(mFirstVisiblePosition);
             }

@@ -7,6 +7,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 
 import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
+import com.asdzheng.sweetshow.utils.recyclerview.Size;
 
 /**
  * Created by asdzheng on 2015/12/28.
@@ -14,6 +15,16 @@ import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
 public class PhotoView extends ImageView
 {
     private String mPhoto;
+
+    public Size getSize() {
+        return size;
+    }
+
+    public void setSize(Size size) {
+        this.size = size;
+    }
+
+    private Size size;
 
     public PhotoView(final Context context) {
         super(context);

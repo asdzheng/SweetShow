@@ -7,6 +7,7 @@ import android.support.annotation.DrawableRes;
 import android.util.ArrayMap;
 import android.widget.ImageView;
 
+import com.asdzheng.sweetshow.ui.view.PhotoView;
 import com.asdzheng.sweetshow.utils.LogUtil;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
@@ -28,7 +29,18 @@ public class PicassoImageLoader implements ImageLoader {
 
     @Override
     public void load(final Context context, final String s, final ImageView imageView) {
-        Picasso.with(context).load(s).into(imageView);
+        if(imageView instanceof PhotoView) {
+            PhotoView photoView = (PhotoView) imageView;
+            if(photoView.getSize() != null) {
+                LogUtil.w("PicassoImageLoader", photoView.getSize().toString());
+                Picasso.with(context).load(s).resize(photoView.getSize().getWidth(), photoView.getSize().getHeight()).into(imageView);
+            } else {
+                Picasso.with(context).load(s).into(imageView);
+            }
+
+        } else {
+            Picasso.with(context).load(s).into(imageView);
+        }
     }
 
     @Override
