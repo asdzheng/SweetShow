@@ -14,6 +14,7 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.Scroller;
 
+import com.asdzheng.sweetshow.utils.LogUtil;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioLayoutManager;
 
 /**
@@ -892,6 +893,7 @@ public class SwipeToLoadLayout extends ViewGroup {
      * @return
      */
     private boolean onCheckCanLoadMore() {
+        LogUtil.i(TAG, "canChildScrollDown()" + canChildScrollDown());
 
         return mLoadMoreEnabled && !canChildScrollDown() && mHasFooterView && mLoadMoreTriggerOffset > 0;
     }
@@ -954,8 +956,11 @@ public class SwipeToLoadLayout extends ViewGroup {
                 if(recyclerView.getLayoutManager() instanceof AspectRatioLayoutManager) {
                     //这里还需计最后一个可见的未知是否小于最后一个位置
                     AspectRatioLayoutManager layoutManager = (AspectRatioLayoutManager) recyclerView.getLayoutManager();
+//                    LogUtil.i(TAG, "layoutManager getPaddingBottom " + layoutManager.getPaddingBottom() + " | getPaddingBottom "+ recyclerView.getChildAt(recyclerView.getChildCount() - 1).getBottom());
+
                     return recyclerView.getChildCount() > 0
-                            && recyclerView.getChildAt(recyclerView.getChildCount() - 1).getBottom() > recyclerView.getPaddingBottom();
+                            && (layoutManager.getmLastVisiblePosition() > recyclerView.getAdapter().getItemCount() - 1 ||
+                            recyclerView.getChildAt(recyclerView.getChildCount() - 1).getBottom() + layoutManager.getLayoutDirection() > recyclerView.getHeight() );
                 } else {
                     return ViewCompat.canScrollVertically(mTargetView, -1);
                 }

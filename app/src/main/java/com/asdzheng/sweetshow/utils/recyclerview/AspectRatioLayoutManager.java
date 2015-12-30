@@ -5,12 +5,18 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 
+import com.asdzheng.sweetshow.utils.LogUtil;
+
 /**
  * Created by asdzheng on 2015/12/26.
  */
 public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
     private static final String TAG;
+    //第一个可见的position
     private int mFirstVisiblePosition;
+    //最后一个可见的position
+    private int mLastVisiblePosition;
+
     private int mFirstVisibleRow;
     private boolean mForceClearOffsets;
     private AspectRatioLayoutSizeCalculator mSizeCalculator;
@@ -31,8 +37,9 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
         return getWidth() - getPaddingLeft() - getPaddingRight();
     }
 
-    private int preFillGrid(final Direction direction, final int n, final int n2, final RecyclerView.Recycler recycler, final RecyclerView.State state) {
+    private int preFillGrid(final Direction direction, final int dy, final int n2, final RecyclerView.Recycler recycler, final RecyclerView.State state) {
         final int firstChildPositionForRow = this.mSizeCalculator.getFirstChildPositionForRow(this.mFirstVisibleRow);
+//        LogUtil.i(TAG, "mFirstVisibleRow = " + mFirstVisibleRow  + " | firstChildPositionForRow = " + firstChildPositionForRow+ "| mFirstVisiblePosition = " + mFirstVisiblePosition) ;
         final SparseArray sparseArray = new SparseArray(getChildCount());
         final int paddingLeft = getPaddingLeft();
         int decoratedTop = n2 + getPaddingTop();
@@ -42,9 +49,11 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
                 switch (direction) {
                     case UP:
                         decoratedTop -= this.mSizeCalculator.sizeForChildAtPosition(-1 + this.mFirstVisiblePosition).getHeight();
+                        LogUtil.i(TAG, "UP = " + decoratedTop);
                         break;
                     case DOWN:
                         decoratedTop += this.mSizeCalculator.sizeForChildAtPosition(this.mFirstVisiblePosition).getHeight();
+                        LogUtil.i(TAG, "DOWN = " + decoratedTop);
                         break;
                 }
             }
@@ -56,31 +65,38 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
             }
         }
         this.mFirstVisiblePosition = firstChildPositionForRow;
-        int n3 = paddingLeft;
-        int n4 = decoratedTop;
+        int childPaddingLeft = paddingLeft;
+        int childPaddingTop = decoratedTop;
+
+//        LogUtil.i(TAG, "ItemCount = " + state.getItemCount());
+
         for (int mFirstVisiblePosition = this.mFirstVisiblePosition; mFirstVisiblePosition >= 0 && mFirstVisiblePosition < state.getItemCount(); ++mFirstVisiblePosition) {
             final Size sizeForChildAtPosition = this.mSizeCalculator.sizeForChildAtPosition(mFirstVisiblePosition);
-            if (n3 + sizeForChildAtPosition.getWidth() > this.getContentWidth()) {
-                n3 = paddingLeft;
-                n4 += this.mSizeCalculator.sizeForChildAtPosition(mFirstVisiblePosition - 1).getHeight();
+            //是否加上下一个view就超过屏幕的宽度
+            if (childPaddingLeft + sizeForChildAtPosition.getWidth() > this.getContentWidth()) {
+                childPaddingLeft = paddingLeft;
+                childPaddingTop += this.mSizeCalculator.sizeForChildAtPosition(mFirstVisiblePosition - 1).getHeight();
             }
             int n5 = 0;
             switch (direction) {
                 default:
-                    if (n4 >= this.getContentHeight()) {
+                    if (childPaddingTop >= this.getContentHeight()) {
                         n5 = 1;
                         break;
                     }
                     n5 = 0;
                     break;
                 case DOWN:
-                    if (n4 >= n + this.getContentHeight()) {
+                    if (childPaddingTop >= dy + this.getContentHeight()) {
                         n5 = 1;
                     } else {
                         n5 = 0;
                     }
                     break;
             }
+
+//            LogUtil.i(TAG, "childPaddingTop = " + childPaddingTop + " | dy = " + dy + " | getContentHeight = " + getContentHeight() + " | n5 = " + n5);
+
             if (n5 != 0) {
                 break;
             }
@@ -89,12 +105,12 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
                 final View viewForPosition = recycler.getViewForPosition(mFirstVisiblePosition);
                 addView(viewForPosition);
                 measureChildWithMargins(viewForPosition, 0, 0);
-                layoutDecorated(viewForPosition, n3, n4, n3 + sizeForChildAtPosition.getWidth(), n4 + sizeForChildAtPosition.getHeight());
+                layoutDecorated(viewForPosition, childPaddingLeft, childPaddingTop, childPaddingLeft + sizeForChildAtPosition.getWidth(), childPaddingTop + sizeForChildAtPosition.getHeight());
             } else {
                 attachView(view);
                 sparseArray.remove(mFirstVisiblePosition);
             }
-            n3 += sizeForChildAtPosition.getWidth();
+            childPaddingLeft += sizeForChildAtPosition.getWidth();
         }
         for (int k = 0; k < sparseArray.size(); ++k) {
             recycler.recycleView((View) sparseArray.valueAt(k));
@@ -104,6 +120,11 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
         if (childCount > 0) {
             bottom = getChildAt(-1 + getChildCount()).getBottom();
         }
+
+        mLastVisiblePosition = mFirstVisiblePosition + childCount - 1;
+
+//        LogUtil.i(TAG, "childCount = " + childCount);
+
         return bottom;
     }
 
@@ -116,9 +137,13 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
         return this.mFirstVisiblePosition;
     }
 
+    public int getmLastVisiblePosition() {
+        return mLastVisiblePosition;
+    }
+
     @Override
     public RecyclerView.LayoutParams generateDefaultLayoutParams() {
-        return new RecyclerView.LayoutParams(-2, -2);
+        return new RecyclerView.LayoutParams(RecyclerView.LayoutParams.WRAP_CONTENT, RecyclerView.LayoutParams.WRAP_CONTENT);
     }
 
     public AspectRatioLayoutSizeCalculator getSizeCalculator() {
@@ -169,15 +194,28 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
         requestLayout();
     }
 
+    /**
+     * Scroll vertically by dy pixels in screen coordinates and return the distance traveled.
+     * The default implementation does nothing and returns 0.
+     *
+     * @param dy            distance to scroll in pixels. Y increases as scroll position
+     *                      approaches the bottom.
+     * @param recycler      Recycler to use for fetching potentially cached views for a
+     *                      position
+     * @param state         Transient state of RecyclerView
+     * @return The actual distance scrolled. The return value will be negative if dy was
+     * negative and scrolling proceeeded in that direction.
+     * <code>Math.abs(result)</code> may be less than dy if a boundary was reached.
+     */
     @Override
-    public int scrollVerticallyBy(final int n, final RecyclerView.Recycler recycler, final RecyclerView.State state) {
-        if (getChildCount() == 0 || n == 0) {
+    public int scrollVerticallyBy(final int dy, final RecyclerView.Recycler recycler, final RecyclerView.State state) {
+        if (getChildCount() == 0 || dy == 0) {
             return 0;
         }
         final View child = getChildAt(0);
         final View child2 = getChildAt(-1 + getChildCount());
         int n2 = this.getContentHeight();
-        if (n > 0) {
+        if (dy > 0) {
             boolean b;
             if (1 + this.mFirstVisiblePosition + getChildCount() >= getItemCount()) {
                 b = true;
@@ -185,27 +223,27 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
                 b = false;
             }
             if (b && n2 <= this.getContentHeight()) {
-                this.preFillGrid(Direction.DOWN, Math.abs(n), 0, recycler, state);
+                this.preFillGrid(Direction.DOWN, Math.abs(dy), 0, recycler, state);
                 n2 = getDecoratedBottom(getChildAt(-1 + getChildCount())) - this.getContentHeight();
-            } else if (getDecoratedBottom(child) - n <= 0) {
+            } else if (getDecoratedBottom(child) - dy <= 0) {
                 ++this.mFirstVisibleRow;
-                n2 = this.preFillGrid(Direction.DOWN, Math.abs(n), 0, recycler, state);
-            } else if (getDecoratedBottom(child2) - n < this.getContentHeight()) {
-                n2 = this.preFillGrid(Direction.DOWN, Math.abs(n), 0, recycler, state);
+                n2 = this.preFillGrid(Direction.DOWN, Math.abs(dy), 0, recycler, state);
+            } else if (getDecoratedBottom(child2) - dy < this.getContentHeight()) {
+                n2 = this.preFillGrid(Direction.DOWN, Math.abs(dy), 0, recycler, state);
             }
-        } else if (this.mFirstVisibleRow == 0 && getDecoratedTop(child) - n >= 0) {
+        } else if (this.mFirstVisibleRow == 0 && getDecoratedTop(child) - dy >= 0) {
             n2 = -getDecoratedTop(child);
-        } else if (getDecoratedTop(child) - n >= 0) {
+        } else if (getDecoratedTop(child) - dy >= 0) {
             --this.mFirstVisibleRow;
-            n2 = this.preFillGrid(Direction.UP, Math.abs(n), 0, recycler, state);
-        } else if (getDecoratedTop(child2) - n > this.getContentHeight()) {
-            n2 = this.preFillGrid(Direction.UP, Math.abs(n), 0, recycler, state);
+            n2 = this.preFillGrid(Direction.UP, Math.abs(dy), 0, recycler, state);
+        } else if (getDecoratedTop(child2) - dy > this.getContentHeight()) {
+            n2 = this.preFillGrid(Direction.UP, Math.abs(dy), 0, recycler, state);
         }
         int n3;
-        if (Math.abs(n) > n2) {
-            n3 = n2 * (int) Math.signum(n);
+        if (Math.abs(dy) > n2) {
+            n3 = n2 * (int) Math.signum(dy);
         } else {
-            n3 = n;
+            n3 = dy;
         }
         offsetChildrenVertical(-n3);
         return n3;
