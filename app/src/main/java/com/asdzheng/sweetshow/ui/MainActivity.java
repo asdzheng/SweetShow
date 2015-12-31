@@ -21,14 +21,19 @@ import com.asdzheng.sweetshow.bean.NewChannelInfoDto;
 import com.asdzheng.sweetshow.bean.UserInfo;
 import com.asdzheng.sweetshow.http.GsonRequest;
 import com.asdzheng.sweetshow.http.UrlUtil;
+import com.asdzheng.sweetshow.imageloaders.ImagePipelineConfigFactory;
 import com.asdzheng.sweetshow.ui.adapter.PhotosAdapter;
 import com.asdzheng.sweetshow.ui.view.waveswiperefreshlayout.WaveSwipeRefreshLayout;
 import com.asdzheng.sweetshow.utils.MeasUtils;
+import com.asdzheng.sweetshow.utils.StringUtil;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioLayoutManager;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioSpacingItemDecoration;
+import com.facebook.drawee.backends.pipeline.Fresco;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 
 public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshLayout.OnRefreshListener {
 
@@ -54,6 +59,8 @@ public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshL
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        Fresco.initialize(this, ImagePipelineConfigFactory.getOkHttpImagePipelineConfig(this));
 
         waveSwipeRefreshLayout = (WaveSwipeRefreshLayout) findViewById(R.id.wave_layout);
         int homepage_refresh_spacing = 40;
@@ -89,9 +96,9 @@ public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshL
                     if(response.getData().getResults() != null) {
                         if(page == 1) {
                             mPhotosAdapter.clear();
-                            mPhotosAdapter.bind(response.getData().getResults());
+                            mPhotosAdapter.bind(filterEmptyPhotos(response.getData().getResults()));
                         } else {
-                            mPhotosAdapter.bind(response.getData().getResults());
+                            mPhotosAdapter.bind(filterEmptyPhotos(response.getData().getResults()));
                         }
                     }
                     nextStr = response.getData().getNext();
@@ -117,9 +124,21 @@ public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshL
         queue.add(request);
     }
 
+    private List<NewChannelInfoDetailDto> filterEmptyPhotos(List<NewChannelInfoDetailDto> results) {
+        List<NewChannelInfoDetailDto> infos = new ArrayList<>() ;
+        for (NewChannelInfoDetailDto info : results) {
+            if(StringUtil.isNotEmpty(info.photo)) {
+                infos.add(info);
+            }
+        }
+        return infos;
+    }
+
     private void setupRecyclerView() {
-        this.mPhotosAdapter = new PhotosAdapter(list);
-        this.mRecyclerView.setAdapter(mPhotosAdapter);
+        this.mPhotosAdapter = new PhotosAdapter(list,this);
+//        AnimationAdapter animationAdapter = new AlphaInAnimationAdapter(mPhotosAdapter);
+//        animationAdapter.setDuration(500);
+        this.mRecyclerView.setAdapter(new ScaleInAnimationAdapter(mPhotosAdapter));
         final AspectRatioLayoutManager layoutManager = new AspectRatioLayoutManager(mPhotosAdapter);
         this.mRecyclerView.setLayoutManager(layoutManager);
         layoutManager.setMaxRowHeight(getResources().getDisplayMetrics().heightPixels / 3);

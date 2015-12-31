@@ -43,7 +43,7 @@ public class PhotoView extends ImageView
 
     private void init(final AttributeSet set, final int n) {
         this.setScaleType(ImageView.ScaleType.FIT_XY);
-        this.setLayoutParams(new ViewGroup.LayoutParams(-1, -1));
+        this.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
         this.setBackgroundColor(Color.GRAY);
     }
 

@@ -5,7 +5,7 @@ android {
     buildToolsVersion "23.0.2"
 
     defaultConfig {
-        applicationId "com.example.asdzheng.testsame"
+        applicationId "com.asdzheng.sweetshow"
         minSdkVersion 19
         targetSdkVersion 23
         versionCode 1
@@ -28,6 +28,12 @@ dependencies {
     compile 'com.android.support:recyclerview-v7:23.1.1'
     compile 'com.squareup.picasso:picasso:2.5.2'
     compile 'com.squareup.okhttp:okhttp:2.7.0'
+    compile 'com.github.bumptech.glide:glide:3.6.1'
+    compile 'jp.wasabeef:recyclerview-animators:2.1.0'
+    compile 'com.facebook.fresco:fresco:0.8.1'
+    compile 'com.facebook.fresco:imagepipeline-okhttp:0.8.1'
+
+
 //    compile 'com.squareup.okhttp:okhttp-urlconnection:2.5.0'
 //    compile 'com.jude:easyrecyclerview:3.2.3'
 //    compile 'com.marshalchen.ultimaterecyclerview:library:0.3.18'

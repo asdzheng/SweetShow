@@ -1,5 +1,7 @@
 package com.asdzheng.sweetshow.ui.adapter;
 
+import android.content.Context;
+import android.net.Uri;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.ArrayMap;
@@ -8,9 +10,13 @@ import android.view.ViewGroup;
 
 import com.asdzheng.sweetshow.bean.NewChannelInfoDetailDto;
 import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
-import com.asdzheng.sweetshow.ui.view.PhotoView;
+import com.asdzheng.sweetshow.ui.drawable.Drawables;
+import com.asdzheng.sweetshow.utils.LogUtil;
 import com.asdzheng.sweetshow.utils.StringUtil;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioLayoutSizeCalculator;
+import com.facebook.drawee.generic.GenericDraweeHierarchy;
+import com.facebook.drawee.generic.GenericDraweeHierarchyBuilder;
+import com.facebook.drawee.view.SimpleDraweeView;
 
 import java.util.List;
 
@@ -23,8 +29,14 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewH
 
     private ArrayMap<String, Double> photoAspectRatios;
 
-    public PhotosAdapter(List<NewChannelInfoDetailDto> mPhotos) {
+    ViewGroup.LayoutParams params;
+
+    private int num = 0;
+    public PhotosAdapter(List<NewChannelInfoDetailDto> mPhotos, Context context) {
         this.mPhotos = mPhotos;
+
+
+        params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
     }
 
 
@@ -76,12 +88,29 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewH
 
     @Override
     public PhotoViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
-        return new PhotoViewHolder(new PhotoView(parent.getContext()));
+        num ++ ;
+        LogUtil.w("photoadapter", "new SimpleDraweeView num = " + num);
+
+//        return new PhotoViewHolder(new PhotoView(parent.getContext()));
+        SimpleDraweeView draweeView = new SimpleDraweeView(parent.getContext());
+        GenericDraweeHierarchyBuilder builder =
+                new GenericDraweeHierarchyBuilder(parent.getResources());
+        GenericDraweeHierarchy hierarchy  = builder
+                .setFadeDuration(300)
+                .setPlaceholderImage(Drawables.sPlaceholderDrawable)
+                .setFailureImage(Drawables.sErrorDrawable)
+                .build();
+        draweeView.setHierarchy(hierarchy);
+        draweeView.setLayoutParams(params);
+        return new PhotoViewHolder(draweeView);
+
     }
 
     @Override
     public void onBindViewHolder(PhotoViewHolder holder, int position) {
-        ((PhotoView) holder.itemView).bind(this.mPhotos.get(position).photo);
+        SimpleDraweeView draweeView = ((SimpleDraweeView) holder.itemView);
+        draweeView.setImageURI(Uri.parse(mPhotos.get(position).photo));
+//        ((PhotoView) holder.itemView).bind(this.mPhotos.get(position).photo);
     }
 
     @Override

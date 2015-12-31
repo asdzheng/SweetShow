@@ -7,4 +7,7 @@
     <color name="waveDeepColor">#90CAF9</color>
     <color name="waveLightColor">#2196F3</color>
 
+    <color name="placeholder">#e1e4eb</color>
+    <color name="error">#ff9999</color>
+
 </resources>

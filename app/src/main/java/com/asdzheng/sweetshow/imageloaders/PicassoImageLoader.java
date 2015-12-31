@@ -31,12 +31,15 @@ public class PicassoImageLoader implements ImageLoader {
     public void load(final Context context, final String s, final ImageView imageView) {
         if(imageView instanceof PhotoView) {
             PhotoView photoView = (PhotoView) imageView;
-            if(photoView.getSize() != null) {
-                LogUtil.w("PicassoImageLoader", photoView.getSize().toString());
-                Picasso.with(context).load(s).resize(photoView.getSize().getWidth(), photoView.getSize().getHeight()).into(imageView);
-            } else {
-                Picasso.with(context).load(s).into(imageView);
-            }
+
+            Picasso.with(context).load(s).into(imageView);
+
+//            if(photoView.getSize() != null) {
+//                LogUtil.w("PicassoImageLoader", photoView.getSize().toString());
+//                Picasso.with(context).load(s).resize(photoView.getSize().getWidth(), photoView.getSize().getHeight()).into(imageView);
+//            } else {
+//                Picasso.with(context).load(s).into(imageView);
+//            }
 
         } else {
             Picasso.with(context).load(s).into(imageView);
