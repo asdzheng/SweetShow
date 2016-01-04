@@ -1,7 +1,11 @@
 package com.asdzheng.sweetshow.ui.adapter;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.support.annotation.NonNull;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.ArrayMap;
 import android.view.View;
@@ -9,9 +13,12 @@ import android.view.ViewGroup;
 
 import com.asdzheng.sweetshow.bean.NewChannelInfoDetailDto;
 import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
+import com.asdzheng.sweetshow.ui.activity.ChannelPhotoDetailActivity;
 import com.asdzheng.sweetshow.ui.view.PhotoView;
+import com.asdzheng.sweetshow.utils.MeasUtils;
 import com.asdzheng.sweetshow.utils.StringUtil;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioLayoutSizeCalculator;
+import com.asdzheng.sweetshow.utils.recyclerview.Size;
 
 import java.util.List;
 
@@ -27,6 +34,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewH
     ViewGroup.LayoutParams params;
 
     private int num = 0;
+
     public PhotosAdapter(List<NewChannelInfoDetailDto> mPhotos, Context context) {
         this.mPhotos = mPhotos;
         params = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT);
@@ -103,7 +111,8 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewH
     public void onBindViewHolder(PhotoViewHolder holder, int position) {
 //        SimpleDraweeView draweeView = ((SimpleDraweeView) holder.itemView);
 //        draweeView.setImageURI(Uri.parse(mPhotos.get(position).photo));
-        ((PhotoView) holder.itemView).bind(this.mPhotos.get(position).photo);
+        ((PhotoView) holder.itemView).bind(mPhotos.get(position).photo);
+        holder.itemView.setTag(mPhotos.get(position).photo);
     }
 
     @Override
@@ -130,10 +139,18 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewH
 //        void onPhotoLongPressListener(View p0, Photo p1, int p2);
 //    }
 
-    public class PhotoViewHolder extends RecyclerView.ViewHolder
-    {
+    public class PhotoViewHolder extends RecyclerView.ViewHolder {
         public PhotoViewHolder(final View view) {
             super(view);
+            view.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    scaleUpAnimation(v);
+//                    Intent intent = new Intent(context, ChannelPhotoDetailActivity.class);
+//                    intent.putExtra("photo", v.getTag().toString());
+//                    context.startActivity(intent);
+                }
+            });
         }
 
     }
@@ -145,4 +162,23 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewH
     public void setPhotoAspectRatios(ArrayMap<String, Double> photoAspectRatios) {
         this.photoAspectRatios = photoAspectRatios;
     }
+
+    private void scaleUpAnimation(View view) {
+        Context context = view.getContext();
+
+        Size detailSize = new Size(MeasUtils.getDisplayWidth(context), view.getHeight() *
+                (MeasUtils.getDisplayWidth(context) / view.getWidth()));
+
+        //让新的Activity从一个小的范围扩大到全屏
+        ActivityOptionsCompat options =
+                ActivityOptionsCompat.makeScaleUpAnimation(view, detailSize.getWidth()//The View that the new activity is animating from
+                        , detailSize.getHeight(), //拉伸开始的坐标
+                        0, 0);//拉伸开始的区域大小，这里用（0，0）表示从无到全屏
+
+        Intent intent = new Intent(context, ChannelPhotoDetailActivity.class);
+        intent.putExtra("photo", view.getTag().toString());
+        intent.putExtra("size", detailSize);
+        ActivityCompat.startActivity((Activity) context, intent, options.toBundle());
+    }
+
 }

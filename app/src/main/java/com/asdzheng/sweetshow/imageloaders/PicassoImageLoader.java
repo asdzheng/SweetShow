@@ -44,13 +44,13 @@ public class PicassoImageLoader implements ImageLoader {
 //            }
 
         } else {
-            Picasso.with(context).load(s).tag(context).into(imageView);
+            Picasso.with(context).load(s).tag(context).fit().into(imageView);
         }
     }
 
     @Override
     public void load(final Context context, final String s, final ImageView imageView, @DrawableRes final int n) {
-        Picasso.with(context).load(s).tag(context).placeholder(n).into(imageView);
+        Picasso.with(context).load(s).tag(context).fit().placeholder(n).into(imageView);
     }
 
     @Override

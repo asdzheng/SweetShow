@@ -1,4 +1,4 @@
-package com.asdzheng.sweetshow.ui;
+package com.asdzheng.sweetshow.ui.activity;
 
 import android.os.Bundle;
 import android.os.Handler;
@@ -8,6 +8,7 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.MotionEvent;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -102,12 +103,14 @@ public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshL
             }
         });
 
+
 //        requestData(nextStr);
     }
 
     @NonNull
     private void requestData(final String next) {
-        GsonRequest<NewChannelInfoDto> request = new GsonRequest<>(Request.Method.GET, UrlUtil.getBaseUrl(next), NewChannelInfoDto.class, new Response.Listener<NewChannelInfoDto>() {
+        GsonRequest<NewChannelInfoDto> request = new GsonRequest<>(Request.Method.GET, UrlUtil.getBaseUrl(next), NewChannelInfoDto.class,
+                new Response.Listener<NewChannelInfoDto>() {
 
                 @Override
                 public void onResponse(NewChannelInfoDto response) {
@@ -154,6 +157,22 @@ public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshL
 
     private void setupRecyclerView() {
         this.mPhotosAdapter = new PhotosAdapter(list,this);
+        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
+            @Override
+            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
+                return false;
+            }
+
+            @Override
+            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
+
+            }
+
+            @Override
+            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
+
+            }
+        });
         AnimationAdapter animationAdapter = new AlphaInAnimationAdapter(mPhotosAdapter);
         animationAdapter.setDuration(1000);
         this.mRecyclerView.setAdapter(new ScaleInAnimationAdapter(mPhotosAdapter));
@@ -196,7 +215,6 @@ public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshL
     @Override
     public void onLoad() {
         requestData(nextStr);
-
     }
 
     @Override

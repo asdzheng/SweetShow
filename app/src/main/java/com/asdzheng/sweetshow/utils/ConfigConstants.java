@@ -15,6 +15,7 @@ package com.asdzheng.sweetshow.utils;
 import com.facebook.common.util.ByteConstants;
 
 public class ConfigConstants {
+
   private static final int MAX_HEAP_SIZE = (int) Runtime.getRuntime().maxMemory();
 
   public static final int MAX_DISK_CACHE_SIZE = 50 * ByteConstants.MB;

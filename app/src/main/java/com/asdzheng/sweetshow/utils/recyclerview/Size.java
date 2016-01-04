@@ -1,9 +1,11 @@
 package com.asdzheng.sweetshow.utils.recyclerview;
 
+import java.io.Serializable;
+
 /**
  * Created by asdzheng on 2015/12/26.
  */
-public class Size {
+public class Size implements Serializable{
     private int height;
     private int width;
 
