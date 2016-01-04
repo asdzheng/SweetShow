@@ -12,19 +12,28 @@ import com.asdzheng.sweetshow.utils.recyclerview.Size;
 /**
  * Created by asdzheng on 2015/12/28.
  */
-public class PhotoView extends ImageView
-{
+public class PhotoView extends ImageView {
     private String mPhoto;
 
-    public Size getSize() {
-        return size;
-    }
+    private Size size ;
 
-    public void setSize(Size size) {
-        this.size = size;
-    }
+    @Override
+    public void layout(int l, int t, int r, int b) {
+        super.layout(l, t, r, b);
 
-    private Size size;
+        //只有在重新第一次或者宽高改变时才需重新请求图片
+        if(size == null) {
+            size = new Size(getWidth(), getHeight());
+            ShowImageLoader.getSharedInstance().load(getContext(), mPhoto, this);
+        } else {
+            if(size.getWidth() != getWidth() && size.getHeight() != getHeight()) {
+                size.setWidth(getWidth());
+                size.setHeight(getHeight());
+                ShowImageLoader.getSharedInstance().load(getContext(), mPhoto, this);
+            }
+        }
+
+    }
 
     public PhotoView(final Context context) {
         super(context);
@@ -47,16 +56,23 @@ public class PhotoView extends ImageView
         this.setBackgroundColor(Color.GRAY);
     }
 
-//    public void bind(final S mPhoto) {
-//        this.mPhoto = mPhoto;
-//       ShowImageLoader.getSharedInstance().loadImageForPhotoAtSize(mPhoto, 31, this);
-//    }
-
     public void bind(final String s) {
-        ShowImageLoader.getSharedInstance().load(s, this);
+        mPhoto = s;
+        if(getWidth() != 0 && getHeight() != 0) {
+            ShowImageLoader.getSharedInstance().load(getContext(), mPhoto, this);
+        }
     }
 
     public String toString() {
         return this.mPhoto;
     }
+
+//    public Size getSize() {
+//        return size;
+//    }
+//
+//    public void setSize(Size size) {
+//        this.size = size;
+//    }
+
 }

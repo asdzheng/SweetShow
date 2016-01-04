@@ -5,7 +5,6 @@ import android.util.Log;
 import android.util.SparseArray;
 import android.view.View;
 
-import com.asdzheng.sweetshow.ui.view.PhotoView;
 import com.asdzheng.sweetshow.utils.LogUtil;
 
 /**
@@ -69,8 +68,6 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
         int childPaddingLeft = paddingLeft;
         int childPaddingTop = decoratedTop;
 
-//        LogUtil.i(TAG, "ItemCount = " + state.getItemCount());
-
         for (int mFirstVisiblePosition = this.mFirstVisiblePosition; mFirstVisiblePosition >= 0 && mFirstVisiblePosition < state.getItemCount(); ++mFirstVisiblePosition) {
             final Size sizeForChildAtPosition = this.mSizeCalculator.sizeForChildAtPosition(mFirstVisiblePosition);
             //是否加上下一个view就超过屏幕的宽度
@@ -104,28 +101,12 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
             final View view = (View) sparseArray.get(mFirstVisiblePosition);
             if (view == null) {
                 final View viewForPosition = recycler.getViewForPosition(mFirstVisiblePosition);
-                if(viewForPosition instanceof PhotoView) {
-                    LogUtil.w(TAG, "view == null view is photo");
-
-                    PhotoView photoView = (PhotoView) viewForPosition;
-                    photoView.setSize(sizeForChildAtPosition);
-                }
-
-               LogUtil.i(TAG, "view == null mFirstVisiblePosition = " + mFirstVisiblePosition + " | sizeForChildAtPosition = " + sizeForChildAtPosition );
-
-
+//               LogUtil.i(TAG, "view == null mFirstVisiblePosition = " + mFirstVisiblePosition + " | sizeForChildAtPosition = " + sizeForChildAtPosition );
                 addView(viewForPosition);
                 measureChildWithMargins(viewForPosition, 0, 0);
                 layoutDecorated(viewForPosition, childPaddingLeft, childPaddingTop, childPaddingLeft + sizeForChildAtPosition.getWidth(), childPaddingTop + sizeForChildAtPosition.getHeight());
             } else {
-                if(view instanceof PhotoView) {
-                    LogUtil.w(TAG, "view != null view is photo");
-                    PhotoView photoView = (PhotoView) view;
-                    photoView.setSize(sizeForChildAtPosition);
-                }
-
-                LogUtil.i(TAG, "view != null mFirstVisiblePosition = " + mFirstVisiblePosition + " | sizeForChildAtPosition = " + sizeForChildAtPosition );
-
+//                LogUtil.i(TAG, "view != null mFirstVisiblePosition = " + mFirstVisiblePosition + " | sizeForChildAtPosition = " + sizeForChildAtPosition );
                 attachView(view);
                 sparseArray.remove(mFirstVisiblePosition);
             }
@@ -141,8 +122,6 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
         }
 
         mLastVisiblePosition = mFirstVisiblePosition + childCount - 1;
-
-//        LogUtil.i(TAG, "childCount = " + childCount);
 
         return bottom;
     }
@@ -217,11 +196,11 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
      * Scroll vertically by dy pixels in screen coordinates and return the distance traveled.
      * The default implementation does nothing and returns 0.
      *
-     * @param dy            distance to scroll in pixels. Y increases as scroll position
-     *                      approaches the bottom.
-     * @param recycler      Recycler to use for fetching potentially cached views for a
-     *                      position
-     * @param state         Transient state of RecyclerView
+     * @param dy       distance to scroll in pixels. Y increases as scroll position
+     *                 approaches the bottom.
+     * @param recycler Recycler to use for fetching potentially cached views for a
+     *                 position
+     * @param state    Transient state of RecyclerView
      * @return The actual distance scrolled. The return value will be negative if dy was
      * negative and scrolling proceeeded in that direction.
      * <code>Math.abs(result)</code> may be less than dy if a boundary was reached.

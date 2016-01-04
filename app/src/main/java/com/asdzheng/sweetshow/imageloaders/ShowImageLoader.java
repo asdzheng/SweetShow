@@ -36,6 +36,10 @@ public class ShowImageLoader {
         this.mImageLoader.load(this.mContext, s, imageView);
     }
 
+    public void load(Context context, final String s, final ImageView imageView) {
+        this.mImageLoader.load(context, s, imageView);
+    }
+
     public void load(final String s, final ImageView imageView, @DrawableRes final int n) {
         this.mImageLoader.load(this.mContext, s, imageView, n);
     }
@@ -82,5 +86,13 @@ public class ShowImageLoader {
 
     public interface AspectRatios {
         void getAspectRatios(ArrayMap<String, Double> ratios);
+    }
+
+    public void pauseTag(Context context) {
+        mImageLoader.pause(context);
+    }
+
+    public void resumeTag(Context context) {
+        mImageLoader.resume(context);
     }
 }

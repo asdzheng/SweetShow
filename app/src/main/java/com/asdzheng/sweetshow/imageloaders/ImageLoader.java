@@ -17,4 +17,8 @@ public interface ImageLoader {
     void prefetch(Context context, String... imageUrls);
 
     void fetchImageForSize(Context context, final ShowImageLoader.AspectRatios ratios, final String... imageUrls);
+
+    void pause(Context context);
+
+    void resume(Context context);
 }

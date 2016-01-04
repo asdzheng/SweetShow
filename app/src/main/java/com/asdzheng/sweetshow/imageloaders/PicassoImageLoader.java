@@ -8,7 +8,9 @@ import android.util.ArrayMap;
 import android.widget.ImageView;
 
 import com.asdzheng.sweetshow.ui.view.PhotoView;
+import com.asdzheng.sweetshow.utils.ConfigConstants;
 import com.asdzheng.sweetshow.utils.LogUtil;
+import com.squareup.picasso.LruCache;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
@@ -18,37 +20,37 @@ import com.squareup.picasso.Target;
  */
 public class PicassoImageLoader implements ImageLoader {
 
-    private static final long PICASSO_DISK_CACHE_SIZE = 104857600;
-
     @Override
     public void configure(final Context context) {
         Picasso.setSingletonInstance(new Picasso.Builder(context.getApplicationContext()).
-                downloader(new OkHttpDownloader(context.getApplicationContext(), PICASSO_DISK_CACHE_SIZE)).defaultBitmapConfig(Bitmap.Config.RGB_565).
+                downloader(new OkHttpDownloader(context.getApplicationContext(), ConfigConstants.MAX_DISK_CACHE_SIZE)).
+                memoryCache(new LruCache(ConfigConstants.MAX_MEMORY_CACHE_SIZE)).defaultBitmapConfig(Bitmap.Config.RGB_565).
                 build());
+
     }
 
     @Override
     public void load(final Context context, final String s, final ImageView imageView) {
-        if(imageView instanceof PhotoView) {
+        if (imageView instanceof PhotoView) {
             PhotoView photoView = (PhotoView) imageView;
 
-            Picasso.with(context).load(s).into(imageView);
+//            Picasso.with(context).load(s).tag(context).into(imageView);
+            LogUtil.w("PicassoImageLoader", "photoView.getSize() " + photoView.getWidth() + " | " + photoView.getHeight());
 
-//            if(photoView.getSize() != null) {
-//                LogUtil.w("PicassoImageLoader", photoView.getSize().toString());
-//                Picasso.with(context).load(s).resize(photoView.getSize().getWidth(), photoView.getSize().getHeight()).into(imageView);
-//            } else {
-//                Picasso.with(context).load(s).into(imageView);
+            Picasso.with(context).load(s).tag(context).resize(photoView.getWidth(), photoView.getHeight()).into(imageView);
+
+//            else {
+//                Picasso.with(context).load(s).tag(context).into(imageView);
 //            }
 
         } else {
-            Picasso.with(context).load(s).into(imageView);
+            Picasso.with(context).load(s).tag(context).into(imageView);
         }
     }
 
     @Override
     public void load(final Context context, final String s, final ImageView imageView, @DrawableRes final int n) {
-        Picasso.with(context).load(s).placeholder(n).into(imageView);
+        Picasso.with(context).load(s).tag(context).placeholder(n).into(imageView);
     }
 
     @Override
@@ -68,12 +70,12 @@ public class PicassoImageLoader implements ImageLoader {
                 public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
                     LogUtil.i("imageloader", from.toString());
                     if (bitmap.getWidth() >= 1 && bitmap.getHeight() >= 1) {
-                        ratiosMap.put(url, (double)(bitmap.getWidth() / bitmap.getHeight()));
+                        ratiosMap.put(url, (double) (bitmap.getWidth() / bitmap.getHeight()));
                     } else {
-                        ratiosMap.put(url, (double)1);
+                        ratiosMap.put(url, (double) 1);
                     }
 
-                    if(ratiosMap.size() == imageUrls.length) {
+                    if (ratiosMap.size() == imageUrls.length) {
                         ratios.getAspectRatios(ratiosMap);
                     }
 
@@ -83,8 +85,8 @@ public class PicassoImageLoader implements ImageLoader {
                 public void onBitmapFailed(Drawable errorDrawable) {
                     LogUtil.i("imageloader", "fail");
 
-                    ratiosMap.put(url, (double)1);
-                    if(ratiosMap.size() == imageUrls.length) {
+                    ratiosMap.put(url, (double) 1);
+                    if (ratiosMap.size() == imageUrls.length) {
                         ratios.getAspectRatios(ratiosMap);
                     }
                 }
@@ -95,5 +97,15 @@ public class PicassoImageLoader implements ImageLoader {
                 }
             });
         }
+    }
+
+    @Override
+    public void pause(Context context) {
+        Picasso.with(context).pauseTag(context);
+    }
+
+    @Override
+    public void resume(Context context) {
+        Picasso.with(context).resumeTag(context);
     }
 }

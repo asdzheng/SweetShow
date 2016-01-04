@@ -5,7 +5,6 @@ import android.support.annotation.DrawableRes;
 import android.widget.ImageView;
 
 import com.asdzheng.sweetshow.ui.view.PhotoView;
-import com.asdzheng.sweetshow.utils.LogUtil;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
@@ -16,21 +15,24 @@ public class GlideImageLoader implements ImageLoader
 {
     @Override
     public void configure(final Context context) {
+
     }
 
     @Override
     public void load(final Context context, final String s, final ImageView imageView) {
-        Glide.with(context).load(s).into(imageView);
+//        Glide.with(context).load(s).into(imageView);
 
         if(imageView instanceof PhotoView) {
             PhotoView photoView = (PhotoView) imageView;
 
-            if(photoView.getSize() != null) {
-                LogUtil.w("PicassoImageLoader", photoView.getSize().toString());
-                Glide.with(context).load(s).override(photoView.getSize().getWidth(), photoView.getSize().getHeight()).into(imageView);
-            } else {
-                Glide.with(context).load(s).into(imageView);
-            }
+            Glide.with(context).load(s).into(imageView);
+
+//            if(photoView.getSize() != null) {
+//                LogUtil.w("GlideImageLoader", photoView.getSize().toString());
+//                Glide.with(context).load(s).override(photoView.getSize().getWidth(), photoView.getSize().getHeight()).into(imageView);
+//            } else {
+//                Glide.with(context).load(s).into(imageView);
+//            }
 
         } else {
             Glide.with(context).load(s).into(imageView);
@@ -52,5 +54,15 @@ public class GlideImageLoader implements ImageLoader
     @Override
     public void fetchImageForSize(Context context, ShowImageLoader.AspectRatios ratios, String... imageUrls) {
 
+    }
+
+    @Override
+    public void pause(Context context) {
+        Glide.with(context).pauseRequests();
+    }
+
+    @Override
+    public void resume(Context context) {
+        Glide.with(context).resumeRequests();
     }
 }

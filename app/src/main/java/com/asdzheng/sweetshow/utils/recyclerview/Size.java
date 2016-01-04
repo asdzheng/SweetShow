@@ -3,12 +3,11 @@ package com.asdzheng.sweetshow.utils.recyclerview;
 /**
  * Created by asdzheng on 2015/12/26.
  */
-public class Size
-{
+public class Size {
     private int height;
     private int width;
 
-    public Size(final int width, final int height) {
+    public Size(int width, int height) {
         this.width = width;
         this.height = height;
     }
@@ -19,6 +18,14 @@ public class Size
 
     public int getWidth() {
         return this.width;
+    }
+
+    public void setHeight(int height) {
+        this.height = height;
+    }
+
+    public void setWidth(int width) {
+        this.width = width;
     }
 
     @Override

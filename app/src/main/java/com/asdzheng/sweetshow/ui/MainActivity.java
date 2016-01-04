@@ -22,6 +22,7 @@ import com.asdzheng.sweetshow.bean.UserInfo;
 import com.asdzheng.sweetshow.http.GsonRequest;
 import com.asdzheng.sweetshow.http.UrlUtil;
 import com.asdzheng.sweetshow.imageloaders.ImagePipelineConfigFactory;
+import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
 import com.asdzheng.sweetshow.ui.adapter.PhotosAdapter;
 import com.asdzheng.sweetshow.ui.view.waveswiperefreshlayout.WaveSwipeRefreshLayout;
 import com.asdzheng.sweetshow.utils.MeasUtils;
@@ -33,6 +34,8 @@ import com.facebook.drawee.backends.pipeline.Fresco;
 import java.util.ArrayList;
 import java.util.List;
 
+import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
+import jp.wasabeef.recyclerview.adapters.AnimationAdapter;
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 
 public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshLayout.OnRefreshListener {
@@ -81,6 +84,21 @@ public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshL
             public void run() {
                 waveSwipeRefreshLayout.setRefreshing(true);
                 requestData(nextStr);
+            }
+        });
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    ShowImageLoader.getSharedInstance().resumeTag(MainActivity.this);
+                } else if(newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    ShowImageLoader.getSharedInstance().pauseTag(MainActivity.this);
+                } else if(newState== RecyclerView.SCROLL_STATE_SETTLING) {
+                    ShowImageLoader.getSharedInstance().pauseTag(MainActivity.this);
+                }
             }
         });
 
@@ -136,8 +154,8 @@ public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshL
 
     private void setupRecyclerView() {
         this.mPhotosAdapter = new PhotosAdapter(list,this);
-//        AnimationAdapter animationAdapter = new AlphaInAnimationAdapter(mPhotosAdapter);
-//        animationAdapter.setDuration(500);
+        AnimationAdapter animationAdapter = new AlphaInAnimationAdapter(mPhotosAdapter);
+        animationAdapter.setDuration(1000);
         this.mRecyclerView.setAdapter(new ScaleInAnimationAdapter(mPhotosAdapter));
         final AspectRatioLayoutManager layoutManager = new AspectRatioLayoutManager(mPhotosAdapter);
         this.mRecyclerView.setLayoutManager(layoutManager);
