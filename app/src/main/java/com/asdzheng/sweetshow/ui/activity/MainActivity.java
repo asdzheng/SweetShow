@@ -8,7 +8,6 @@ import android.support.v7.widget.RecyclerView;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.view.MotionEvent;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -22,7 +21,6 @@ import com.asdzheng.sweetshow.bean.NewChannelInfoDto;
 import com.asdzheng.sweetshow.bean.UserInfo;
 import com.asdzheng.sweetshow.http.GsonRequest;
 import com.asdzheng.sweetshow.http.UrlUtil;
-import com.asdzheng.sweetshow.imageloaders.ImagePipelineConfigFactory;
 import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
 import com.asdzheng.sweetshow.ui.adapter.PhotosAdapter;
 import com.asdzheng.sweetshow.ui.view.waveswiperefreshlayout.WaveSwipeRefreshLayout;
@@ -30,7 +28,6 @@ import com.asdzheng.sweetshow.utils.MeasUtils;
 import com.asdzheng.sweetshow.utils.StringUtil;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioLayoutManager;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioSpacingItemDecoration;
-import com.facebook.drawee.backends.pipeline.Fresco;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -41,7 +38,10 @@ import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 
 public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshLayout.OnRefreshListener {
 
+    //SexyChannel
     public static final String SEXY_CHANNEL = "/channel/1033563/senses";
+
+    public static final String BEAUTY_CHANNEL = "/channel/1015326/senses";
 
 
     private RecyclerView mRecyclerView;
@@ -57,14 +57,14 @@ public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshL
 
     private PhotosAdapter mPhotosAdapter;
 
-    private String nextStr = SEXY_CHANNEL;
+    private String nextStr = BEAUTY_CHANNEL;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Fresco.initialize(this, ImagePipelineConfigFactory.getOkHttpImagePipelineConfig(this));
+//        Fresco.initialize(this, ImagePipelineConfigFactory.getOkHttpImagePipelineConfig(this));
 
         waveSwipeRefreshLayout = (WaveSwipeRefreshLayout) findViewById(R.id.wave_layout);
         int homepage_refresh_spacing = 40;
@@ -88,23 +88,8 @@ public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshL
             }
         });
 
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
-
-            @Override
-            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
-                super.onScrollStateChanged(recyclerView, newState);
-                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    ShowImageLoader.getSharedInstance().resumeTag(MainActivity.this);
-                } else if(newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                    ShowImageLoader.getSharedInstance().pauseTag(MainActivity.this);
-                } else if(newState== RecyclerView.SCROLL_STATE_SETTLING) {
-                    ShowImageLoader.getSharedInstance().pauseTag(MainActivity.this);
-                }
-            }
-        });
 
 
-//        requestData(nextStr);
     }
 
     @NonNull
@@ -157,22 +142,7 @@ public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshL
 
     private void setupRecyclerView() {
         this.mPhotosAdapter = new PhotosAdapter(list,this);
-        mRecyclerView.addOnItemTouchListener(new RecyclerView.OnItemTouchListener() {
-            @Override
-            public boolean onInterceptTouchEvent(RecyclerView rv, MotionEvent e) {
-                return false;
-            }
 
-            @Override
-            public void onTouchEvent(RecyclerView rv, MotionEvent e) {
-
-            }
-
-            @Override
-            public void onRequestDisallowInterceptTouchEvent(boolean disallowIntercept) {
-
-            }
-        });
         AnimationAdapter animationAdapter = new AlphaInAnimationAdapter(mPhotosAdapter);
         animationAdapter.setDuration(1000);
         this.mRecyclerView.setAdapter(new ScaleInAnimationAdapter(mPhotosAdapter));
@@ -180,6 +150,21 @@ public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshL
         this.mRecyclerView.setLayoutManager(layoutManager);
         layoutManager.setMaxRowHeight(getResources().getDisplayMetrics().heightPixels / 3);
         this.mRecyclerView.addItemDecoration(new AspectRatioSpacingItemDecoration(MeasUtils.dpToPx(4.0f, this)));
+
+        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
+
+            @Override
+            public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
+                super.onScrollStateChanged(recyclerView, newState);
+                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                    ShowImageLoader.getSharedInstance().resumeTag(MainActivity.this);
+                } else if(newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                    ShowImageLoader.getSharedInstance().pauseTag(MainActivity.this);
+                } else if(newState== RecyclerView.SCROLL_STATE_SETTLING) {
+                    ShowImageLoader.getSharedInstance().pauseTag(MainActivity.this);
+                }
+            }
+        });
     }
 
     @Override
@@ -208,7 +193,7 @@ public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshL
     @Override
     public void onRefresh() {
         page = 1;
-        nextStr = SEXY_CHANNEL;
+        nextStr = BEAUTY_CHANNEL;
         requestData(nextStr);
     }
 

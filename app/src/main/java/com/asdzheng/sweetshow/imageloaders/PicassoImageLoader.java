@@ -7,7 +7,7 @@ import android.support.annotation.DrawableRes;
 import android.util.ArrayMap;
 import android.widget.ImageView;
 
-import com.asdzheng.sweetshow.ui.view.PhotoView;
+import com.asdzheng.sweetshow.ui.view.ChannelImageView;
 import com.asdzheng.sweetshow.utils.ConfigConstants;
 import com.asdzheng.sweetshow.utils.LogUtil;
 import com.squareup.picasso.LruCache;
@@ -31,13 +31,13 @@ public class PicassoImageLoader implements ImageLoader {
 
     @Override
     public void load(final Context context, final String s, final ImageView imageView) {
-        if (imageView instanceof PhotoView) {
-            PhotoView photoView = (PhotoView) imageView;
+        if (imageView instanceof ChannelImageView) {
+            ChannelImageView channelImageView = (ChannelImageView) imageView;
 
 //            Picasso.with(context).load(s).tag(context).into(imageView);
-            LogUtil.w("PicassoImageLoader", "photoView.getSize() " + photoView.getWidth() + " | " + photoView.getHeight());
+            LogUtil.w("PicassoImageLoader", "photoView.getSize() " + channelImageView.getWidth() + " | " + channelImageView.getHeight());
 
-            Picasso.with(context).load(s).tag(context).resize(photoView.getWidth(), photoView.getHeight()).into(imageView);
+            Picasso.with(context).load(s).tag(context).resize(channelImageView.getWidth(), channelImageView.getHeight()).into(imageView);
 
 //            else {
 //                Picasso.with(context).load(s).tag(context).into(imageView);

@@ -2,10 +2,8 @@ package com.asdzheng.sweetshow.ui.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.content.Intent;
+import android.os.Bundle;
 import android.support.annotation.NonNull;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.RecyclerView;
 import android.util.ArrayMap;
 import android.view.View;
@@ -14,11 +12,12 @@ import android.view.ViewGroup;
 import com.asdzheng.sweetshow.bean.NewChannelInfoDetailDto;
 import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
 import com.asdzheng.sweetshow.ui.activity.ChannelPhotoDetailActivity;
-import com.asdzheng.sweetshow.ui.view.PhotoView;
+import com.asdzheng.sweetshow.ui.view.ChannelImageView;
 import com.asdzheng.sweetshow.utils.MeasUtils;
 import com.asdzheng.sweetshow.utils.StringUtil;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioLayoutSizeCalculator;
 import com.asdzheng.sweetshow.utils.recyclerview.Size;
+import com.asdzheng.sweetshow.utils.transition.ActivityTransitionEnterHelper;
 
 import java.util.List;
 
@@ -92,7 +91,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewH
 //        num ++ ;
 //        LogUtil.w("photoadapter", "new SimpleDraweeView num = " + num);
 
-        return new PhotoViewHolder(new PhotoView(parent.getContext()));
+        return new PhotoViewHolder(new ChannelImageView(parent.getContext()));
 //        SimpleDraweeView draweeView = new SimpleDraweeView(parent.getContext());
 //        GenericDraweeHierarchyBuilder builder =
 //                new GenericDraweeHierarchyBuilder(parent.getResources());
@@ -111,7 +110,7 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewH
     public void onBindViewHolder(PhotoViewHolder holder, int position) {
 //        SimpleDraweeView draweeView = ((SimpleDraweeView) holder.itemView);
 //        draweeView.setImageURI(Uri.parse(mPhotos.get(position).photo));
-        ((PhotoView) holder.itemView).bind(mPhotos.get(position).photo);
+        ((ChannelImageView) holder.itemView).bind(mPhotos.get(position).photo);
         holder.itemView.setTag(mPhotos.get(position).photo);
     }
 
@@ -164,21 +163,26 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewH
     }
 
     private void scaleUpAnimation(View view) {
-        Context context = view.getContext();
-
+        Activity context = (Activity) view.getContext();
         Size detailSize = new Size(MeasUtils.getDisplayWidth(context), view.getHeight() *
                 (MeasUtils.getDisplayWidth(context) / view.getWidth()));
 
-        //让新的Activity从一个小的范围扩大到全屏
-        ActivityOptionsCompat options =
-                ActivityOptionsCompat.makeScaleUpAnimation(view, detailSize.getWidth()//The View that the new activity is animating from
-                        , detailSize.getHeight(), //拉伸开始的坐标
-                        0, 0);//拉伸开始的区域大小，这里用（0，0）表示从无到全屏
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("size", detailSize);
 
-        Intent intent = new Intent(context, ChannelPhotoDetailActivity.class);
-        intent.putExtra("photo", view.getTag().toString());
-        intent.putExtra("size", detailSize);
-        ActivityCompat.startActivity((Activity) context, intent, options.toBundle());
+        ActivityTransitionEnterHelper.with(context).fromView(view).
+                imageUrl(view.getTag().toString()).bundle(bundle).start(ChannelPhotoDetailActivity.class);
+
+//        //让新的Activity从一个小的范围扩大到全屏
+//        ActivityOptionsCompat options =
+//                ActivityOptionsCompat.makeScaleUpAnimation(view, detailSize.getWidth()//The View that the new activity is animating from
+//                        , detailSize.getHeight(), //拉伸开始的坐标
+//                        0, 0);//拉伸开始的区域大小，这里用（0，0）表示从无到全屏
+//
+//        Intent intent = new Intent(context, ChannelPhotoDetailActivity.class);
+//        intent.putExtra("photo", view.getTag().toString());
+//        intent.putExtra("size", detailSize);
+//        ActivityCompat.startActivity((Activity) context, intent, options.toBundle());
     }
 
 }

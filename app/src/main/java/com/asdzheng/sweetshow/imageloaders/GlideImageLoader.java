@@ -4,7 +4,7 @@ import android.content.Context;
 import android.support.annotation.DrawableRes;
 import android.widget.ImageView;
 
-import com.asdzheng.sweetshow.ui.view.PhotoView;
+import com.asdzheng.sweetshow.ui.view.ChannelImageView;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.engine.DiskCacheStrategy;
 
@@ -22,8 +22,8 @@ public class GlideImageLoader implements ImageLoader
     public void load(final Context context, final String s, final ImageView imageView) {
 //        Glide.with(context).load(s).into(imageView);
 
-        if(imageView instanceof PhotoView) {
-            PhotoView photoView = (PhotoView) imageView;
+        if(imageView instanceof ChannelImageView) {
+            ChannelImageView channelImageView = (ChannelImageView) imageView;
 
             Glide.with(context).load(s).into(imageView);
 
