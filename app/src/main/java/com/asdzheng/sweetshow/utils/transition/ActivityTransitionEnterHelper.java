@@ -33,10 +33,10 @@ public class ActivityTransitionEnterHelper {
         return this;
     }
 
-    public ActivityTransitionEnterHelper imageUrl(String imgUrl) {
-        this.imgUrl = imgUrl;
-        return this;
-    }
+//    public ActivityTransitionEnterHelper imageUrl(String imgUrl) {
+//        this.imgUrl = imgUrl;
+//        return this;
+//    }
 
     public ActivityTransitionEnterHelper bundle(Bundle bundle) {
         this.bundle = bundle;
@@ -51,8 +51,8 @@ public class ActivityTransitionEnterHelper {
         intent.putExtra(PRE_NAME + ".left", screenLocation[0]).
                 putExtra(PRE_NAME + ".top", screenLocation[1]).
                 putExtra(PRE_NAME + ".width", fromView.getWidth()).
-                putExtra(PRE_NAME + ".height", fromView.getHeight()).
-                putExtra(PRE_NAME + ".imageUrl", imgUrl);
+                putExtra(PRE_NAME + ".height", fromView.getHeight());
+
         if(bundle != null) {
             intent.putExtras(bundle);
         }

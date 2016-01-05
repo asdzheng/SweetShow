@@ -169,9 +169,10 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewH
 
         Bundle bundle = new Bundle();
         bundle.putSerializable("size", detailSize);
+        bundle.putString("photo", view.getTag().toString());
 
         ActivityTransitionEnterHelper.with(context).fromView(view).
-                imageUrl(view.getTag().toString()).bundle(bundle).start(ChannelPhotoDetailActivity.class);
+                bundle(bundle).start(ChannelPhotoDetailActivity.class);
 
 //        //让新的Activity从一个小的范围扩大到全屏
 //        ActivityOptionsCompat options =

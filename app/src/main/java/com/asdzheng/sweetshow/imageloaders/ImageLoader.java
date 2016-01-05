@@ -1,8 +1,11 @@
 package com.asdzheng.sweetshow.imageloaders;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.DrawableRes;
 import android.widget.ImageView;
+
+import java.io.IOException;
 
 /**
  * Created by asdzheng on 2015/12/26.
@@ -21,4 +24,6 @@ public interface ImageLoader {
     void pause(Context context);
 
     void resume(Context context);
+
+    Bitmap getBitmapFromCache(Context context, String key) ;
 }

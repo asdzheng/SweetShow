@@ -1,8 +1,9 @@
 package com.asdzheng.sweetshow.imageloaders;
 
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.support.annotation.DrawableRes;
-import android.util.ArrayMap;
+import android.support.v4.util.ArrayMap;
 import android.widget.ImageView;
 
 import com.asdzheng.sweetshow.MyApplication;
@@ -95,4 +96,9 @@ public class ShowImageLoader {
     public void resumeTag(Context context) {
         mImageLoader.resume(context);
     }
+
+    public Bitmap getBitmapFromCache(Context context, String key) {
+        return mImageLoader.getBitmapFromCache(context, key);
+    }
+
 }

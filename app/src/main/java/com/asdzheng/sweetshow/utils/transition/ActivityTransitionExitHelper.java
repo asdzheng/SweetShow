@@ -19,17 +19,17 @@ import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
  * At 15:13
  * ActivityTransitionExit
  * Don`t forget add transparent theme in target activity
- <style name="Transparent">
- <item name="android:windowNoTitle">true</item>
- <item name="android:windowIsTranslucent">true</item>
- <item name="android:windowBackground">@android:color/transparent</item>
- </style>
+ * <style name="Transparent">
+ * <item name="android:windowNoTitle">true</item>
+ * <item name="android:windowIsTranslucent">true</item>
+ * <item name="android:windowBackground">@android:color/transparent</item>
+ * </style>
  */
 public class ActivityTransitionExitHelper {
 
-    private  final DecelerateInterpolator decelerator = new DecelerateInterpolator();
-    private  final AccelerateInterpolator accelerator = new AccelerateInterpolator();
-    private static final int ANIM_DURATION = 500;
+    private final DecelerateInterpolator decelerator = new DecelerateInterpolator();
+    private final AccelerateInterpolator accelerator = new AccelerateInterpolator();
+    private static final int ANIM_DURATION = 300;
     private Intent fromIntent;//intent from pre activity
     private View toView;//target view show in this activity
     private View background; //root view of this activity
@@ -49,6 +49,7 @@ public class ActivityTransitionExitHelper {
 
     /**
      * add target view
+     *
      * @param toView
      * @return
      */
@@ -59,6 +60,7 @@ public class ActivityTransitionExitHelper {
 
     /**
      * add root view of this layout
+     *
      * @param background
      * @return
      */
@@ -77,16 +79,6 @@ public class ActivityTransitionExitHelper {
             final int thumbnailLeft = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".left", 0);
             final int thumbnailWidth = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".width", 0);
             final int thumbnailHeight = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".height", 0);
-            String imgUrl = fromIntent.getStringExtra(ActivityTransitionEnterHelper.PRE_NAME + ".imageUrl");
-            ShowImageLoader.getSharedInstance().load(imgUrl, (ImageView)toView);
-//            ImageLoader.getInstance().displayImage(imgUrl, (ImageView) toView,new DisplayImageOptions.Builder()
-//                    .showImageOnLoading(R.drawable.ic_launcher)
-//                    .showImageForEmptyUri(R.drawable.ic_launcher)
-//                    .showImageOnFail(R.drawable.ic_launcher).cacheInMemory(true)
-//                    .cacheOnDisk(true).considerExifParams(true)
-//                    .bitmapConfig(Bitmap.Config.RGB_565)
-//                    .displayer(DefaultConfigurationFactory.createBitmapDisplayer())
-//                    .build());
             bgDrawable = new ColorDrawable(Color.BLACK);
             background.setBackground(bgDrawable);
             toView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -99,8 +91,8 @@ public class ActivityTransitionExitHelper {
                     leftDelta = thumbnailLeft - viewLocation[0];
                     topDelta = thumbnailTop - viewLocation[1];
                     //Note: widthDelta must be float
-                    widthDelta =(float) thumbnailWidth / toView.getWidth();
-                    heightDelta =(float)  thumbnailHeight / toView.getHeight();
+                    widthDelta = (float) thumbnailWidth / toView.getWidth();
+                    heightDelta = (float) thumbnailHeight / toView.getHeight();
 
                     runEnterAnimation();
                     return true;
@@ -111,12 +103,11 @@ public class ActivityTransitionExitHelper {
     }
 
     private void runEnterAnimation() {
-//        AlphaAnimation alphaAnimation = new AlphaAnimation(0, 1);
-//        alphaAnimation.setDuration(ANIM_DURATION);
-//        alphaAnimation.setInterpolator(accelerator);
-//        background.startAnimation(alphaAnimation);
+        ObjectAnimator bgAnim = ObjectAnimator.ofInt(bgDrawable, "alpha", 0, 255);
+        bgAnim.setInterpolator(accelerator);
+        bgAnim.setDuration(ANIM_DURATION);
+        bgAnim.start();
 
-        //resize/relocation toView
         toView.setPivotX(0);
         toView.setPivotY(0); //axis
         toView.setScaleX(widthDelta);
@@ -128,23 +119,9 @@ public class ActivityTransitionExitHelper {
                 .scaleX(1).scaleY(1).setDuration(ANIM_DURATION)
                 .setInterpolator(accelerator)
                 .start();
-
-
-
-        ObjectAnimator bgAnim = ObjectAnimator.ofInt(bgDrawable, "alpha",0,255);
-        bgAnim.setInterpolator(accelerator);
-        bgAnim.setDuration(ANIM_DURATION);
-        bgAnim.start();
-
     }
 
-    public void runExitAnimation(final Runnable exit){
-
-//        AlphaAnimation alphaAnimation = new AlphaAnimation(1, 0);
-//        alphaAnimation.setDuration(ANIM_DURATION);
-//        alphaAnimation.setInterpolator(accelerator);
-//        background.startAnimation(alphaAnimation);
-
+    public void runExitAnimation(final Runnable exit) {
         //targetApi 16
         toView.animate().translationX(leftDelta).translationY(topDelta)
                 .scaleX(widthDelta).scaleY(heightDelta)
@@ -157,13 +134,9 @@ public class ActivityTransitionExitHelper {
                         toView.setVisibility(View.GONE); //let background and target view invisible
                         exit.run();
                     }
-                }) //endAction Callback
-                .start();
-
-
-
+                }).start();
 //        //animate color drawable of background
-        ObjectAnimator bgAnim = ObjectAnimator.ofInt(bgDrawable, "alpha",0);
+        ObjectAnimator bgAnim = ObjectAnimator.ofInt(bgDrawable, "alpha", 0);
         bgAnim.setInterpolator(decelerator);
         bgAnim.setDuration(ANIM_DURATION);
         bgAnim.start();

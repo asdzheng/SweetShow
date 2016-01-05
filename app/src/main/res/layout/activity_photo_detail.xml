@@ -17,6 +17,15 @@
         android:id="@+id/iv_channel_photo_detail"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
+        android:layout_centerInParent="true"
         />
+
+    <com.asdzheng.sweetshow.ui.view.MaterialProgressBar
+        android:id="@+id/mp_photo_detail"
+        android:layout_width="80dp"
+        android:layout_height="80dp"
+        android:layout_centerInParent="true"
+        />
+
 
 </RelativeLayout>
