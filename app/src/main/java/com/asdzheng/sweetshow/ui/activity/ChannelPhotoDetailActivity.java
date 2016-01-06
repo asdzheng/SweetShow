@@ -1,22 +1,23 @@
 package com.asdzheng.sweetshow.ui.activity;
 
-import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.view.View;
 import android.widget.ImageView;
 
+import com.asdzheng.sweetshow.MyApplication;
 import com.asdzheng.sweetshow.R;
+import com.asdzheng.sweetshow.imageloaders.ImageCallback;
+import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
+import com.asdzheng.sweetshow.utils.LogUtil;
 import com.asdzheng.sweetshow.utils.recyclerview.Size;
 import com.asdzheng.sweetshow.utils.transition.ActivityTransitionExitHelper;
 import com.squareup.picasso.Picasso;
-import com.squareup.picasso.Target;
 
 /**
  * Created by Administrator on 2016-1-4.
  */
-public class ChannelPhotoDetailActivity extends Activity {
+public class ChannelPhotoDetailActivity extends AppCompatActivity {
 
     private ImageView imageView;
 
@@ -36,23 +37,60 @@ public class ChannelPhotoDetailActivity extends Activity {
         transitionExitHelper = ActivityTransitionExitHelper.with(getIntent())
                 .toView(imageView).background(findViewById(R.id.rl_photo_detail)).start(savedInstanceState);
 
-        Picasso.with(this).load(photo).into(new Target() {
+        ShowImageLoader.getSharedInstance().load(photo, imageView, new ImageCallback() {
+
+
             @Override
-            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
-                imageView.setImageBitmap(bitmap);
+            public void onSuccess() {
+                super.onSuccess();
+
+//                imageView.setImageBitmap(bitmap);
                 findViewById(R.id.mp_photo_detail).setVisibility(View.GONE);
+
+                LogUtil.i("SSSS", "getWidth " + imageView.getWidth() + " | toView.getHeight()" + imageView.getHeight());
+
+//                LogUtil.i("SSSS", "FROM " + from);
             }
 
             @Override
-            public void onBitmapFailed(Drawable errorDrawable) {
+            public void onError() {
+                super.onError();
                 findViewById(R.id.mp_photo_detail).setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onPrepareLoad(Drawable placeHolderDrawable) {
 
             }
-        });
+
+//            @Override
+//            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+//                super.onBitmapLoaded(bitmap, from);
+//
+//            }
+//
+//            @Override
+//            public void onBitmapFailed(Drawable errorDrawable) {
+//                super.onBitmapFailed(errorDrawable);
+//                findViewById(R.id.mp_photo_detail).setVisibility(View.GONE);
+//
+            }
+        );
+
+//        Picasso.with(this).load(photo).into(new Target() {
+//            @Override
+//            public void onBitmapLoaded(Bitmap bitmap, Picasso.LoadedFrom from) {
+//
+//            }
+//
+//            @Override
+//            public void onBitmapFailed(Drawable errorDrawable) {
+//                findViewById(R.id.mp_photo_detail).setVisibility(View.GONE);
+//            }
+//
+//            @Override
+//            public void onPrepareLoad(Drawable placeHolderDrawable) {
+//
+//            }
+//        });
+
+        LogUtil.i("detail ", Picasso.with(MyApplication.context).getSnapshot().toString());
 
     }
 

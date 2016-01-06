@@ -5,7 +5,7 @@ import android.graphics.Bitmap;
 import android.support.annotation.DrawableRes;
 import android.widget.ImageView;
 
-import java.io.IOException;
+import com.squareup.picasso.Callback;
 
 /**
  * Created by asdzheng on 2015/12/26.
@@ -26,4 +26,8 @@ public interface ImageLoader {
     void resume(Context context);
 
     Bitmap getBitmapFromCache(Context context, String key) ;
+
+    void load(Context context, String s, ImageTarget target);
+
+    void load(Context context, String s, ImageView imageView, Callback callback);
 }

@@ -37,13 +37,25 @@ public class ShowImageLoader {
         this.mImageLoader.load(this.mContext, s, imageView);
     }
 
+    public void load(final String s, final ImageView imageView, ImageCallback callback) {
+        this.mImageLoader.load(this.mContext, s, imageView, callback);
+    }
+
+    public void load(String s, ImageTarget target) {
+        this.mImageLoader.load(this.mContext, s, target);
+    }
+
     public void load(Context context, final String s, final ImageView imageView) {
         this.mImageLoader.load(context, s, imageView);
     }
 
+
+
     public void load(final String s, final ImageView imageView, @DrawableRes final int n) {
         this.mImageLoader.load(this.mContext, s, imageView, n);
     }
+
+
 
     public void fetchImageForSize(final ShowImageLoader.AspectRatios ratios, final String... imageUrls) {
         this.mImageLoader.fetchImageForSize(mContext, ratios, imageUrls);
@@ -100,5 +112,7 @@ public class ShowImageLoader {
     public Bitmap getBitmapFromCache(Context context, String key) {
         return mImageLoader.getBitmapFromCache(context, key);
     }
+
+
 
 }

@@ -3,11 +3,8 @@ package com.asdzheng.sweetshow.ui.activity;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
-import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
-import android.view.Menu;
-import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -18,12 +15,12 @@ import com.android.volley.toolbox.Volley;
 import com.asdzheng.sweetshow.R;
 import com.asdzheng.sweetshow.bean.NewChannelInfoDetailDto;
 import com.asdzheng.sweetshow.bean.NewChannelInfoDto;
-import com.asdzheng.sweetshow.bean.UserInfo;
 import com.asdzheng.sweetshow.http.GsonRequest;
 import com.asdzheng.sweetshow.http.UrlUtil;
 import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
 import com.asdzheng.sweetshow.ui.adapter.PhotosAdapter;
 import com.asdzheng.sweetshow.ui.view.waveswiperefreshlayout.WaveSwipeRefreshLayout;
+import com.asdzheng.sweetshow.utils.LogUtil;
 import com.asdzheng.sweetshow.utils.MeasUtils;
 import com.asdzheng.sweetshow.utils.StringUtil;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioLayoutManager;
@@ -32,26 +29,24 @@ import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioSpacingItemDecoratio
 import java.util.ArrayList;
 import java.util.List;
 
+import butterknife.Bind;
 import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.adapters.AnimationAdapter;
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 
-public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshLayout.OnRefreshListener {
-
+public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout.OnRefreshListener {
     //SexyChannel
     public static final String SEXY_CHANNEL = "/channel/1033563/senses";
 
     public static final String BEAUTY_CHANNEL = "/channel/1015326/senses";
-
-
-    private RecyclerView mRecyclerView;
-    private WaveSwipeRefreshLayout waveSwipeRefreshLayout;
-
-    UserInfo info;
+    @Bind(R.id.recycler_channel_view)
+    RecyclerView recyclerChannelView;
+    @Bind(R.id.wave_channel)
+    WaveSwipeRefreshLayout waveChannel;
 
     RequestQueue queue;
 
-    int page =1;
+    int page = 1;
 
     List<NewChannelInfoDetailDto> list;
 
@@ -59,136 +54,86 @@ public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshL
 
     private String nextStr = BEAUTY_CHANNEL;
 
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-//        Fresco.initialize(this, ImagePipelineConfigFactory.getOkHttpImagePipelineConfig(this));
-
-        waveSwipeRefreshLayout = (WaveSwipeRefreshLayout) findViewById(R.id.wave_layout);
-        int homepage_refresh_spacing = 40;
-        waveSwipeRefreshLayout.setProgressViewOffset(false, -homepage_refresh_spacing * 2, homepage_refresh_spacing);
-        waveSwipeRefreshLayout.setOnRefreshListener(this);
-
-        mRecyclerView = (RecyclerView) findViewById(R.id.swipe_target);
-//        swipeToLoadLayout = (SwipeToLoadLayout) findViewById(R.id.swipeToLoadLayout);
-
-        queue = Volley.newRequestQueue(this);
-
-        list = new ArrayList<>();
-
-        setupRecyclerView();
-
-        new Handler().post(new Runnable() {
-            @Override
-            public void run() {
-                waveSwipeRefreshLayout.setRefreshing(true);
-                requestData(nextStr);
-            }
-        });
-
-
-
-    }
-
     @NonNull
     private void requestData(final String next) {
         GsonRequest<NewChannelInfoDto> request = new GsonRequest<>(Request.Method.GET, UrlUtil.getBaseUrl(next), NewChannelInfoDto.class,
                 new Response.Listener<NewChannelInfoDto>() {
 
-                @Override
-                public void onResponse(NewChannelInfoDto response) {
-                    if(response.getData().getResults() != null) {
-                        if(page == 1) {
-                            mPhotosAdapter.clear();
-                            mPhotosAdapter.bind(filterEmptyPhotos(response.getData().getResults()));
-                        } else {
-                            mPhotosAdapter.bind(filterEmptyPhotos(response.getData().getResults()));
+                    @Override
+                    public void onResponse(NewChannelInfoDto response) {
+                        if (response.getData().getResults() != null) {
+                            if (page == 1) {
+                                mPhotosAdapter.clear();
+                                mPhotosAdapter.bind(filterEmptyPhotos(response.getData().getResults()));
+                            } else {
+                                mPhotosAdapter.bind(filterEmptyPhotos(response.getData().getResults()));
+                            }
                         }
-                    }
-                    nextStr = response.getData().getNext();
-                    if(page == 1) {
-                        waveSwipeRefreshLayout.setRefreshing(false);
-                    } else {
-                        waveSwipeRefreshLayout.setLoading(false);
-                    }
+                        nextStr = response.getData().getNext();
+                        if (page == 1) {
+                            waveChannel.setRefreshing(false);
+                        } else {
+                            waveChannel.setLoading(false);
+                        }
 
-                    page++;
-                }
-            }, new Response.ErrorListener() {
-                @Override
-                public void onErrorResponse(VolleyError error) {
-                    Toast.makeText(MainActivity.this, "网络连接错误", Toast.LENGTH_SHORT).show();
-                    Log.w("main", error.toString());
-                    waveSwipeRefreshLayout.setRefreshing(false);
-                    waveSwipeRefreshLayout.setLoading(false);
+                        page++;
+                    }
+                }, new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                Toast.makeText(MainActivity.this, "网络连接错误", Toast.LENGTH_SHORT).show();
+                Log.w("main", error.toString());
+                waveChannel.setRefreshing(false);
+                waveChannel.setLoading(false);
 
-                }
-            } );
+            }
+        });
 
         queue.add(request);
     }
 
     private List<NewChannelInfoDetailDto> filterEmptyPhotos(List<NewChannelInfoDetailDto> results) {
-        List<NewChannelInfoDetailDto> infos = new ArrayList<>() ;
+        List<NewChannelInfoDetailDto> infos = new ArrayList<>();
         for (NewChannelInfoDetailDto info : results) {
-            if(StringUtil.isNotEmpty(info.photo)) {
+            if (StringUtil.isNotEmpty(info.photo)) {
                 infos.add(info);
             }
         }
         return infos;
     }
 
+    @Override
+    protected void onResume() {
+        super.onResume();
+        LogUtil.i("MAIN", "width" + getWindow().getDecorView().getWidth() + " | " + getWindow().getDecorView().getHeight());
+    }
+
     private void setupRecyclerView() {
-        this.mPhotosAdapter = new PhotosAdapter(list,this);
+        this.mPhotosAdapter = new PhotosAdapter(list, this);
 
         AnimationAdapter animationAdapter = new AlphaInAnimationAdapter(mPhotosAdapter);
         animationAdapter.setDuration(1000);
-        this.mRecyclerView.setAdapter(new ScaleInAnimationAdapter(mPhotosAdapter));
+        this.recyclerChannelView.setAdapter(new ScaleInAnimationAdapter(mPhotosAdapter));
         final AspectRatioLayoutManager layoutManager = new AspectRatioLayoutManager(mPhotosAdapter);
-        this.mRecyclerView.setLayoutManager(layoutManager);
+        this.recyclerChannelView.setLayoutManager(layoutManager);
         layoutManager.setMaxRowHeight(getResources().getDisplayMetrics().heightPixels / 3);
-        this.mRecyclerView.addItemDecoration(new AspectRatioSpacingItemDecoration(MeasUtils.dpToPx(4.0f, this)));
+        this.recyclerChannelView.addItemDecoration(new AspectRatioSpacingItemDecoration(MeasUtils.dpToPx(4.0f, this)));
 
-        mRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener(){
+        recyclerChannelView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
             @Override
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
-                if(newState == RecyclerView.SCROLL_STATE_IDLE) {
+                if (newState == RecyclerView.SCROLL_STATE_IDLE) {
                     ShowImageLoader.getSharedInstance().resumeTag(MainActivity.this);
-                } else if(newState == RecyclerView.SCROLL_STATE_DRAGGING) {
+                } else if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
                     ShowImageLoader.getSharedInstance().pauseTag(MainActivity.this);
-                } else if(newState== RecyclerView.SCROLL_STATE_SETTLING) {
+                } else if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
                     ShowImageLoader.getSharedInstance().pauseTag(MainActivity.this);
                 }
             }
         });
     }
-
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        return true;
-    }
-
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-
-        //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
-            return true;
-        }
-
-        return super.onOptionsItemSelected(item);
-    }
-
 
     @Override
     public void onRefresh() {
@@ -211,4 +156,37 @@ public class MainActivity extends AppCompatActivity implements WaveSwipeRefreshL
     public boolean canRefresh() {
         return true;
     }
+
+    @Override
+    protected int setLayout() {
+        return R.layout.activity_main;
+    }
+
+    @Override
+    protected void initViews() {
+        int homepage_refresh_spacing = 40;
+
+        waveChannel.setProgressViewOffset(false, -homepage_refresh_spacing * 2, homepage_refresh_spacing);
+        waveChannel.setOnRefreshListener(this);
+
+    }
+
+    @Override
+    protected void initData(Bundle savedInstanceState) {
+        queue = Volley.newRequestQueue(this);
+
+        list = new ArrayList<>();
+
+        setupRecyclerView();
+
+        new Handler().post(new Runnable() {
+            @Override
+            public void run() {
+                waveChannel.setRefreshing(true);
+                requestData(nextStr);
+            }
+        });
+
+    }
+
 }

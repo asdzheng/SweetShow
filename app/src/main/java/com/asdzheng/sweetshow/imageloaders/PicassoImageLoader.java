@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import com.asdzheng.sweetshow.ui.view.ChannelImageView;
 import com.asdzheng.sweetshow.utils.ConfigConstants;
 import com.asdzheng.sweetshow.utils.LogUtil;
+import com.squareup.picasso.Callback;
 import com.squareup.picasso.LruCache;
 import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.OkHttpDownloader;
@@ -122,6 +123,16 @@ public class PicassoImageLoader implements ImageLoader {
             LogUtil.e("PISCCO", e.toString());
             return null;
         }
+    }
+
+    @Override
+    public void load(Context context, String s, ImageTarget target) {
+        Picasso.with(context).load(s).into(target);
+    }
+
+    @Override
+    public void load(Context context, String s, ImageView target, Callback callback) {
+        Picasso.with(context).load(s).into(target, callback);
     }
 
 

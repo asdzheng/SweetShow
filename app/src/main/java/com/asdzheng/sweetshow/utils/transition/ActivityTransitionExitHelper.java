@@ -9,9 +9,8 @@ import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
-import android.widget.ImageView;
 
-import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
+import com.asdzheng.sweetshow.utils.LogUtil;
 
 /**
  * Created by Bruce Too
@@ -27,6 +26,8 @@ import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
  */
 public class ActivityTransitionExitHelper {
 
+    private final String TAG = this.getClass().getSimpleName();
+
     private final DecelerateInterpolator decelerator = new DecelerateInterpolator();
     private final AccelerateInterpolator accelerator = new AccelerateInterpolator();
     private static final int ANIM_DURATION = 300;
@@ -38,6 +39,8 @@ public class ActivityTransitionExitHelper {
     private int topDelta;
     private float widthDelta;
     private float heightDelta;
+//    private int x;
+//    private int y;
 
     public ActivityTransitionExitHelper(Intent fromIntent) {
         this.fromIntent = fromIntent;
@@ -79,6 +82,10 @@ public class ActivityTransitionExitHelper {
             final int thumbnailLeft = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".left", 0);
             final int thumbnailWidth = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".width", 0);
             final int thumbnailHeight = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".height", 0);
+
+//            x = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".x", 0);
+//            y = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".y", 0);
+
             bgDrawable = new ColorDrawable(Color.BLACK);
             background.setBackground(bgDrawable);
             toView.getViewTreeObserver().addOnPreDrawListener(new ViewTreeObserver.OnPreDrawListener() {
@@ -88,11 +95,13 @@ public class ActivityTransitionExitHelper {
                     toView.getViewTreeObserver().removeOnPreDrawListener(this);
                     int viewLocation[] = new int[2];
                     toView.getLocationOnScreen(viewLocation);
-                    leftDelta = thumbnailLeft - viewLocation[0];
-                    topDelta = thumbnailTop - viewLocation[1];
+                    leftDelta = thumbnailLeft - toView.getLeft();
+                    topDelta = thumbnailTop - toView.getTop();
                     //Note: widthDelta must be float
                     widthDelta = (float) thumbnailWidth / toView.getWidth();
                     heightDelta = (float) thumbnailHeight / toView.getHeight();
+
+                    LogUtil.i(TAG, "getWidth " + toView.getWidth() + " | toView.getHeight()" + toView.getHeight());
 
                     runEnterAnimation();
                     return true;
@@ -103,11 +112,6 @@ public class ActivityTransitionExitHelper {
     }
 
     private void runEnterAnimation() {
-        ObjectAnimator bgAnim = ObjectAnimator.ofInt(bgDrawable, "alpha", 0, 255);
-        bgAnim.setInterpolator(accelerator);
-        bgAnim.setDuration(ANIM_DURATION);
-        bgAnim.start();
-
         toView.setPivotX(0);
         toView.setPivotY(0); //axis
         toView.setScaleX(widthDelta);
@@ -119,6 +123,11 @@ public class ActivityTransitionExitHelper {
                 .scaleX(1).scaleY(1).setDuration(ANIM_DURATION)
                 .setInterpolator(accelerator)
                 .start();
+
+        ObjectAnimator bgAnim = ObjectAnimator.ofInt(bgDrawable, "alpha", 0, 255);
+        bgAnim.setInterpolator(accelerator);
+        bgAnim.setDuration(ANIM_DURATION);
+        bgAnim.start();
     }
 
     public void runExitAnimation(final Runnable exit) {

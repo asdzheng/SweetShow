@@ -46,12 +46,15 @@ public class ActivityTransitionEnterHelper {
     public void start(Class target) {
 
         Intent intent = new Intent(activity, target);
-        int[] screenLocation = new int[2];
-        fromView.getLocationOnScreen(screenLocation);
-        intent.putExtra(PRE_NAME + ".left", screenLocation[0]).
-                putExtra(PRE_NAME + ".top", screenLocation[1]).
+//        int[] screenLocation = new int[2];
+//        fromView.getLocationOnScreen(screenLocation);
+        intent.putExtra(PRE_NAME + ".left", fromView.getLeft()).
+                putExtra(PRE_NAME + ".top", fromView.getTop()).
                 putExtra(PRE_NAME + ".width", fromView.getWidth()).
                 putExtra(PRE_NAME + ".height", fromView.getHeight());
+//                putExtra(PRE_NAME + ".x", fromView.getPivotX()).
+//                putExtra(PRE_NAME + ".y", fromView.getPivotY());
+
 
         if(bundle != null) {
             intent.putExtras(bundle);
