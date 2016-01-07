@@ -25,12 +25,12 @@ public class ChannelImageView extends ImageView {
         //只有在重新第一次或者宽高改变时才需重新请求图片
         if(size == null) {
             size = new Size(getWidth(), getHeight());
-            ShowImageLoader.getSharedInstance().load(getContext(), mPhoto, this);
+            ShowImageLoader.getSharedInstance().load(mPhoto, this);
         } else {
             if(size.getWidth() != getWidth() && size.getHeight() != getHeight()) {
                 size.setWidth(getWidth());
                 size.setHeight(getHeight());
-                ShowImageLoader.getSharedInstance().load(getContext(), mPhoto, this);
+                ShowImageLoader.getSharedInstance().load( mPhoto, this);
             }
         }
 
@@ -60,7 +60,7 @@ public class ChannelImageView extends ImageView {
     public void bind(final String s) {
         mPhoto = s;
         if(getWidth() != 0 && getHeight() != 0) {
-            ShowImageLoader.getSharedInstance().load(getContext(), mPhoto, this);
+            ShowImageLoader.getSharedInstance().load(mPhoto, this);
         }
     }
 

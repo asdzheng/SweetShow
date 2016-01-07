@@ -126,28 +126,28 @@ public class ActivityTransitionExitHelper {
     }
 
     private void runEnterAnimation() {
-            isStarting = true;
-            toView.setPivotX(0);
-            toView.setPivotY(0); //axis
-            toView.setScaleX(widthDelta);
-            toView.setScaleY(heightDelta);
-            toView.setTranslationX(leftDelta);
-            toView.setTranslationY(topDelta);
+        isStarting = true;
+        toView.setPivotX(0);
+        toView.setPivotY(0); //axis
+        toView.setScaleX(widthDelta);
+        toView.setScaleY(heightDelta);
+        toView.setTranslationX(leftDelta);
+        toView.setTranslationY(topDelta);
 
-            toView.animate().translationX(0).translationY(0)
-                    .scaleX(1).scaleY(1).setDuration(DEFUALT_ANIM_DURATION)
-                    .setInterpolator(accelerator).withEndAction(new Runnable() {
-                        @Override
-                        public void run() {
-                            LogUtil.w(TAG, "end start");
-                            isStarting = false;
-                        }
-            }).start();
+        toView.animate().translationX(0).translationY(0)
+                .scaleX(1).scaleY(1).setDuration(DEFUALT_ANIM_DURATION)
+                .setInterpolator(accelerator).withEndAction(new Runnable() {
+            @Override
+            public void run() {
+                LogUtil.w(TAG, "end start");
+                isStarting = false;
+            }
+        }).start();
 
-            ObjectAnimator bgAnim = ObjectAnimator.ofInt(bgDrawable, "alpha", 0, 255);
-            bgAnim.setInterpolator(accelerator);
-            bgAnim.setDuration(DEFUALT_ANIM_DURATION);
-            bgAnim.start();
+        ObjectAnimator bgAnim = ObjectAnimator.ofInt(bgDrawable, "alpha", 0, 255);
+        bgAnim.setInterpolator(accelerator);
+        bgAnim.setDuration(DEFUALT_ANIM_DURATION);
+        bgAnim.start();
 
     }
 
@@ -171,6 +171,10 @@ public class ActivityTransitionExitHelper {
 ////            animDuration = animDuration +  (int)(animDuration * (photoView.getScale()-1)) / 3;
 ////            photoView.setScale(1.0f, true);
 //        }
+
+        LogUtil.i(TAG, " photoView Height " +
+                photoView.getDisplayRect().height() + " | scale " + photoView.getScale());
+
         photoView.setZoomTransitionDuration(300);
         photoView.setScale(1.0f, true);
 

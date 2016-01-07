@@ -30,4 +30,6 @@ public interface ImageLoader {
     void load(Context context, String s, ImageTarget target);
 
     void load(Context context, String s, ImageView imageView, Callback callback);
+
+    void cancelRequest(Context context);
 }

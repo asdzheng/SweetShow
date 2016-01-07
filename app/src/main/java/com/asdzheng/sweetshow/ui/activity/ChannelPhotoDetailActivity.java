@@ -10,6 +10,7 @@ import com.asdzheng.sweetshow.MyApplication;
 import com.asdzheng.sweetshow.R;
 import com.asdzheng.sweetshow.imageloaders.ImageCallback;
 import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
+import com.asdzheng.sweetshow.ui.view.MaterialProgressBar;
 import com.asdzheng.sweetshow.utils.LogUtil;
 import com.asdzheng.sweetshow.utils.transition.ActivityTransitionExitHelper;
 import com.squareup.picasso.Picasso;
@@ -17,7 +18,7 @@ import com.squareup.picasso.Picasso;
 /**
  * Created by Administrator on 2016-1-4.
  */
-public class ChannelPhotoDetailActivity extends AppCompatActivity {
+public class ChannelPhotoDetailActivity extends BaseActivity {
     private final String TAG = this.getClass().getSimpleName();
 
     private uk.co.senab.photoview.PhotoView imageView;
@@ -26,13 +27,21 @@ public class ChannelPhotoDetailActivity extends AppCompatActivity {
 
     private boolean isFinishing = false;
 
+    private MaterialProgressBar progressBar;
+
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_photo_detail);
+    protected int setLayout() {
+        return R.layout.activity_photo_detail;
+    }
 
+    @Override
+    protected void initViews() {
         imageView = (uk.co.senab.photoview.PhotoView) findViewById(R.id.iv_channel_photo_detail);
+        progressBar = (MaterialProgressBar) findViewById(R.id.mp_photo_detail);
+    }
 
+    @Override
+    protected void initData(Bundle savedInstanceState) {
         String photo = getIntent().getStringExtra("photo");
 
         transitionExitHelper = ActivityTransitionExitHelper.with(getIntent())
@@ -43,14 +52,14 @@ public class ChannelPhotoDetailActivity extends AppCompatActivity {
                     @Override
                     public void onSuccess() {
                         super.onSuccess();
-                        findViewById(R.id.mp_photo_detail).setVisibility(View.GONE);
+                        progressBar.setVisibility(View.GONE);
                         LogUtil.i("ChannelPhotoDetailActivity", "imageView.getWidth " + imageView.getDisplayRect().width() + " | imageView.getHeight()" + imageView.getDisplayRect().height());
                     }
 
                     @Override
                     public void onError() {
                         super.onError();
-                        findViewById(R.id.mp_photo_detail).setVisibility(View.GONE);
+                        progressBar.setVisibility(View.GONE);
 
                     }
 
@@ -96,7 +105,11 @@ public class ChannelPhotoDetailActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        animExitActivity();
+        if(progressBar.getVisibility() == View.GONE) {
+            animExitActivity();
+        } else {
+            finish();
+        }
     }
 
     private void animExitActivity() {
@@ -115,5 +128,11 @@ public class ChannelPhotoDetailActivity extends AppCompatActivity {
     public void finish() {
         super.finish();
         overridePendingTransition(0, 0);
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        ShowImageLoader.getSharedInstance().cancelRequest();
     }
 }

@@ -45,9 +45,9 @@ public class ShowImageLoader {
         this.mImageLoader.load(this.mContext, s, target);
     }
 
-    public void load(Context context, final String s, final ImageView imageView) {
-        this.mImageLoader.load(context, s, imageView);
-    }
+//    public void load(final String s, final ImageView imageView) {
+//        this.mImageLoader.load(mContext, s, imageView);
+//    }
 
 
 
@@ -109,10 +109,7 @@ public class ShowImageLoader {
         mImageLoader.resume(context);
     }
 
-    public Bitmap getBitmapFromCache(Context context, String key) {
-        return mImageLoader.getBitmapFromCache(context, key);
+    public void cancelRequest() {
+        mImageLoader.cancelRequest(mContext);
     }
-
-
-
 }

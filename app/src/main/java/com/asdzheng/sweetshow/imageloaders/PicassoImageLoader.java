@@ -132,8 +132,11 @@ public class PicassoImageLoader implements ImageLoader {
 
     @Override
     public void load(Context context, String s, ImageView target, Callback callback) {
-        Picasso.with(context).load(s).into(target, callback);
+        Picasso.with(context).load(s).tag(context).into(target, callback);
     }
 
-
+    @Override
+    public void cancelRequest(Context context) {
+        Picasso.with(context).cancelTag(context);
+    }
 }
