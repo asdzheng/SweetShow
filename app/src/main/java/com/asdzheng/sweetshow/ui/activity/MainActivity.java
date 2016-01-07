@@ -20,7 +20,6 @@ import com.asdzheng.sweetshow.http.UrlUtil;
 import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
 import com.asdzheng.sweetshow.ui.adapter.PhotosAdapter;
 import com.asdzheng.sweetshow.ui.view.waveswiperefreshlayout.WaveSwipeRefreshLayout;
-import com.asdzheng.sweetshow.utils.LogUtil;
 import com.asdzheng.sweetshow.utils.MeasUtils;
 import com.asdzheng.sweetshow.utils.StringUtil;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioLayoutManager;
@@ -88,8 +87,9 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
 
             }
         });
-
+        request.setTag(this);
         queue.add(request);
+
     }
 
     private List<NewChannelInfoDetailDto> filterEmptyPhotos(List<NewChannelInfoDetailDto> results) {
@@ -105,7 +105,7 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
     @Override
     protected void onResume() {
         super.onResume();
-        LogUtil.i("MAIN", "width" + getWindow().getDecorView().getWidth() + " | " + getWindow().getDecorView().getHeight());
+//        LogUtil.i("MAIN", "width" + getWindow().getDecorView().getWidth() + " | " + getWindow().getDecorView().getHeight());
     }
 
     private void setupRecyclerView() {
@@ -174,9 +174,7 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
     @Override
     protected void initData(Bundle savedInstanceState) {
         queue = Volley.newRequestQueue(this);
-
         list = new ArrayList<>();
-
         setupRecyclerView();
 
         new Handler().post(new Runnable() {
@@ -189,4 +187,9 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
 
     }
 
+    @Override
+    protected void onDestroy() {
+        queue.cancelAll(this);
+        super.onDestroy();
+    }
 }

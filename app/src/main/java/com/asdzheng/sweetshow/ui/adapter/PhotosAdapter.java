@@ -164,8 +164,11 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewH
 
     private void scaleUpAnimation(View view) {
         Activity context = (Activity) view.getContext();
-        Size detailSize = new Size(MeasUtils.getDisplayWidth(context), view.getHeight() *
-                (MeasUtils.getDisplayWidth(context) / view.getWidth()));
+        Size detailSize = new Size(MeasUtils.getDisplayWidth(context), (int)(view.getHeight() *
+                Float.parseFloat(String.format("%.2f",(float)MeasUtils.getDisplayWidth(context) / view.getWidth()))));
+
+//        LogUtil.w("Adapter", "Size = " + detailSize + " | getHeight = " + view.getHeight() + " scale =" +
+//                Float.parseFloat(String.format("%.2f",(float)MeasUtils.getDisplayWidth(context) / view.getWidth())));
 
         Bundle bundle = new Bundle();
         bundle.putSerializable("size", detailSize);

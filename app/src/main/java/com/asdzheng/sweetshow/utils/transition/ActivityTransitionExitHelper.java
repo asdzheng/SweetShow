@@ -11,6 +11,9 @@ import android.view.animation.AccelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 
 import com.asdzheng.sweetshow.utils.LogUtil;
+import com.asdzheng.sweetshow.utils.recyclerview.Size;
+
+import uk.co.senab.photoview.PhotoView;
 
 /**
  * Created by Bruce Too
@@ -30,17 +33,26 @@ public class ActivityTransitionExitHelper {
 
     private final DecelerateInterpolator decelerator = new DecelerateInterpolator();
     private final AccelerateInterpolator accelerator = new AccelerateInterpolator();
-    private static final int ANIM_DURATION = 300;
+    private static final int DEFUALT_ANIM_DURATION = 300;
+    private static final int SCALE_ANIM_DURATION = 500;
+
     private Intent fromIntent;//intent from pre activity
     private View toView;//target view show in this activity
     private View background; //root view of this activity
     private ColorDrawable bgDrawable; //background color
-    private int leftDelta;
-    private int topDelta;
+    private float leftDelta;
+    private float topDelta;
     private float widthDelta;
     private float heightDelta;
-//    private int x;
-//    private int y;
+
+    private int thumbnailTop;
+    private int thumbnailLeft;
+    private int thumbnailWidth;
+    private int thumbnailHeight;
+
+    private int animDuration = DEFUALT_ANIM_DURATION;
+
+    public boolean isStarting = true;
 
     public ActivityTransitionExitHelper(Intent fromIntent) {
         this.fromIntent = fromIntent;
@@ -78,13 +90,12 @@ public class ActivityTransitionExitHelper {
      */
     public ActivityTransitionExitHelper start(Bundle savedInstanceState) {
         if (savedInstanceState == null) {
-            final int thumbnailTop = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".top", 0);
-            final int thumbnailLeft = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".left", 0);
-            final int thumbnailWidth = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".width", 0);
-            final int thumbnailHeight = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".height", 0);
+            thumbnailTop = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".top", 0);
+            thumbnailLeft = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".left", 0);
+            thumbnailWidth = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".width", 0);
+            thumbnailHeight = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".height", 0);
 
-//            x = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".x", 0);
-//            y = fromIntent.getIntExtra(ActivityTransitionEnterHelper.PRE_NAME + ".y", 0);
+            final Size size = (Size) fromIntent.getSerializableExtra("size");
 
             bgDrawable = new ColorDrawable(Color.BLACK);
             background.setBackground(bgDrawable);
@@ -99,9 +110,12 @@ public class ActivityTransitionExitHelper {
                     topDelta = thumbnailTop - toView.getTop();
                     //Note: widthDelta must be float
                     widthDelta = (float) thumbnailWidth / toView.getWidth();
-                    heightDelta = (float) thumbnailHeight / toView.getHeight();
+                    heightDelta = (float) thumbnailHeight / size.getHeight();
 
-                    LogUtil.i(TAG, "getWidth " + toView.getWidth() + " | toView.getHeight()" + toView.getHeight());
+                    topDelta = topDelta - ((toView.getHeight() - size.getHeight()) / 2) * heightDelta;
+
+                    LogUtil.i(TAG, "thumbnailWidth " + thumbnailWidth + " | thumbnailHeight " +
+                            thumbnailHeight + "| width " + toView.getWidth() + " | size.getHeight()" + size.getHeight() + " topDelta = " + topDelta);
 
                     runEnterAnimation();
                     return true;
@@ -112,30 +126,59 @@ public class ActivityTransitionExitHelper {
     }
 
     private void runEnterAnimation() {
-        toView.setPivotX(0);
-        toView.setPivotY(0); //axis
-        toView.setScaleX(widthDelta);
-        toView.setScaleY(heightDelta);
-        toView.setTranslationX(leftDelta);
-        toView.setTranslationY(topDelta);
+            isStarting = true;
+            toView.setPivotX(0);
+            toView.setPivotY(0); //axis
+            toView.setScaleX(widthDelta);
+            toView.setScaleY(heightDelta);
+            toView.setTranslationX(leftDelta);
+            toView.setTranslationY(topDelta);
 
-        toView.animate().translationX(0).translationY(0)
-                .scaleX(1).scaleY(1).setDuration(ANIM_DURATION)
-                .setInterpolator(accelerator)
-                .start();
+            toView.animate().translationX(0).translationY(0)
+                    .scaleX(1).scaleY(1).setDuration(DEFUALT_ANIM_DURATION)
+                    .setInterpolator(accelerator).withEndAction(new Runnable() {
+                        @Override
+                        public void run() {
+                            LogUtil.w(TAG, "end start");
+                            isStarting = false;
+                        }
+            }).start();
 
-        ObjectAnimator bgAnim = ObjectAnimator.ofInt(bgDrawable, "alpha", 0, 255);
-        bgAnim.setInterpolator(accelerator);
-        bgAnim.setDuration(ANIM_DURATION);
-        bgAnim.start();
+            ObjectAnimator bgAnim = ObjectAnimator.ofInt(bgDrawable, "alpha", 0, 255);
+            bgAnim.setInterpolator(accelerator);
+            bgAnim.setDuration(DEFUALT_ANIM_DURATION);
+            bgAnim.start();
+
     }
 
     public void runExitAnimation(final Runnable exit) {
+
+        PhotoView photoView = (PhotoView) toView;
+//        if (photoView.getScale() > 1) {
+//            LogUtil.i(TAG, "photoView width  " + photoView.getDisplayRect().width() + " | photoView Height " +
+//                    photoView.getDisplayRect().height() + "| toView.width " + toView.getWidth() + " | size.getHeight()" + toView.getHeight() + " | scale " + photoView.getScale());
+//
+////            if(photoView.getDisplayRect().height() < toView.getHeight()) {
+////                heightDelta = thumbnailHeight / photoView.getDisplayRect().height() ;
+////
+//////                topDelta = thumbnailTop - toView.getTop();
+//////                topDelta = topDelta - ((toView.getHeight() - photoView.getDisplayRect().height()) / 2) * heightDelta;
+////            } else {
+//////                topDelta = thumbnailTop - toView.getTop();
+////
+////                heightDelta = thumbnailHeight / (float)toView.getHeight();
+//////            }
+////            animDuration = animDuration +  (int)(animDuration * (photoView.getScale()-1)) / 3;
+////            photoView.setScale(1.0f, true);
+//        }
+        photoView.setZoomTransitionDuration(300);
+        photoView.setScale(1.0f, true);
+
         //targetApi 16
         toView.animate().translationX(leftDelta).translationY(topDelta)
                 .scaleX(widthDelta).scaleY(heightDelta)
                 .setInterpolator(decelerator)
-                .setDuration(ANIM_DURATION)
+                .setDuration(animDuration)
                 .withEndAction(new Runnable() {
                     @Override
                     public void run() {
@@ -144,10 +187,11 @@ public class ActivityTransitionExitHelper {
                         exit.run();
                     }
                 }).start();
+
 //        //animate color drawable of background
         ObjectAnimator bgAnim = ObjectAnimator.ofInt(bgDrawable, "alpha", 0);
         bgAnim.setInterpolator(decelerator);
-        bgAnim.setDuration(ANIM_DURATION);
+        bgAnim.setDuration(animDuration);
         bgAnim.start();
     }
 }
