@@ -87,6 +87,11 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
     private static final int DEFAULT_CIRCLE_TARGET = 64;
 
     private View mTarget; // the target of the gesture
+
+
+    private boolean canLoadMore = false;
+    private boolean canRefresh = false;
+
     private OnRefreshListener mListener = new OnRefreshListener() {
         @Override
         public void onRefresh() {
@@ -98,15 +103,6 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
 
         }
 
-        @Override
-        public boolean canLoadMore() {
-            return true;
-        }
-
-        @Override
-        public boolean canRefresh() {
-            return true;
-        }
     };
     private boolean mRefreshing = false;
     private boolean mLoading = false;
@@ -838,7 +834,7 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
                     if(canChildScrollUp() || mListener == null){
                         return false;
                     }else {
-                        if (yDiff > mTouchSlop && !mIsBeingDragged && mListener.canRefresh()) {
+                        if (yDiff > mTouchSlop && !mIsBeingDragged && canRefresh) {
                             mInitialMotionY = mInitialDownY + mTouchSlop;
                             mIsBeingDragged = true;
                             mProgress.setAlpha(STARTING_PROGRESS_ALPHA);
@@ -850,7 +846,7 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
                     if(canChildScrollDown() || mListener == null){
                         return false;
                     }else {
-                        if (yDiff < 0 && mListener.canLoadMore()){
+                        if (yDiff < 0 && canLoadMore){
                             mLoading = true;
                             return true;
                         }
@@ -1149,6 +1145,22 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
         }
     }
 
+    public boolean isCanLoadMore() {
+        return canLoadMore;
+    }
+
+    public void setCanLoadMore(boolean canLoadMore) {
+        this.canLoadMore = canLoadMore;
+    }
+
+    public boolean isCanRefresh() {
+        return canRefresh;
+    }
+
+    public void setCanRefresh(boolean canRefresh) {
+        this.canRefresh = canRefresh;
+    }
+
     /**
      * Classes that wish to be notified when the swipe gesture correctly
      * triggers a refresh should implement this interface.
@@ -1156,7 +1168,5 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
     public interface OnRefreshListener {
         void onRefresh();
         void onLoad();
-        boolean canLoadMore();
-        boolean canRefresh();
     }
 }

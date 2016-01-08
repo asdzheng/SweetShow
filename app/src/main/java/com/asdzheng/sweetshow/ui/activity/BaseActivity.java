@@ -3,6 +3,8 @@ package com.asdzheng.sweetshow.ui.activity;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 
+import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
+
 import butterknife.ButterKnife;
 
 /**
@@ -41,6 +43,8 @@ public abstract class BaseActivity extends AppCompatActivity {
     @Override
     protected void onDestroy() {
         super.onDestroy();
+        ShowImageLoader.getSharedInstance().cancelRequest(this);
         ButterKnife.unbind(this);
     }
+
 }

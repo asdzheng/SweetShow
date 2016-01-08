@@ -1,7 +1,6 @@
 package com.asdzheng.sweetshow.ui.activity;
 
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
 import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,6 +18,7 @@ import com.squareup.picasso.Picasso;
  * Created by Administrator on 2016-1-4.
  */
 public class ChannelPhotoDetailActivity extends BaseActivity {
+
     private final String TAG = this.getClass().getSimpleName();
 
     private uk.co.senab.photoview.PhotoView imageView;
@@ -47,7 +47,7 @@ public class ChannelPhotoDetailActivity extends BaseActivity {
         transitionExitHelper = ActivityTransitionExitHelper.with(getIntent())
                 .toView(imageView).background(findViewById(R.id.rl_photo_detail)).start(savedInstanceState);
 
-        ShowImageLoader.getSharedInstance().load(photo, imageView, new ImageCallback() {
+        ShowImageLoader.getSharedInstance().load(this, photo, imageView, new ImageCallback() {
 
                     @Override
                     public void onSuccess() {
@@ -130,9 +130,4 @@ public class ChannelPhotoDetailActivity extends BaseActivity {
         overridePendingTransition(0, 0);
     }
 
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        ShowImageLoader.getSharedInstance().cancelRequest();
-    }
 }

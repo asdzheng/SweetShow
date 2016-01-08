@@ -76,10 +76,22 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
                         }
 
                         page++;
+
+                        if(mPhotosAdapter.getItemCount() > 0) {
+                            waveChannel.setCanLoadMore(true);
+                        } else {
+                            waveChannel.setCanLoadMore(false);
+                        }
+
                     }
                 }, new Response.ErrorListener() {
             @Override
             public void onErrorResponse(VolleyError error) {
+
+                if(mPhotosAdapter.getItemCount() == 0) {
+                    waveChannel.setCanLoadMore(false);
+                }
+
                 Toast.makeText(MainActivity.this, "网络连接错误", Toast.LENGTH_SHORT).show();
                 Log.w("main", error.toString());
                 waveChannel.setRefreshing(false);
@@ -100,12 +112,6 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
             }
         }
         return infos;
-    }
-
-    @Override
-    protected void onResume() {
-        super.onResume();
-//        LogUtil.i("MAIN", "width" + getWindow().getDecorView().getWidth() + " | " + getWindow().getDecorView().getHeight());
     }
 
     private void setupRecyclerView() {
@@ -148,16 +154,6 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
     }
 
     @Override
-    public boolean canLoadMore() {
-        return true;
-    }
-
-    @Override
-    public boolean canRefresh() {
-        return true;
-    }
-
-    @Override
     protected int setLayout() {
         return R.layout.activity_main;
     }
@@ -168,7 +164,7 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
 
         waveChannel.setProgressViewOffset(false, -homepage_refresh_spacing * 2, homepage_refresh_spacing);
         waveChannel.setOnRefreshListener(this);
-
+        waveChannel.setCanRefresh(true);
     }
 
     @Override
@@ -192,4 +188,8 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
         queue.cancelAll(this);
         super.onDestroy();
     }
+
+
+
+
 }

@@ -1,14 +1,11 @@
 package com.asdzheng.sweetshow.imageloaders;
 
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.support.annotation.DrawableRes;
 import android.support.v4.util.ArrayMap;
 import android.widget.ImageView;
 
 import com.asdzheng.sweetshow.MyApplication;
-
-import java.util.List;
 
 /**
  * Created by asdzheng on 2015/12/26.
@@ -16,11 +13,11 @@ import java.util.List;
 public class ShowImageLoader {
 
     private static volatile ShowImageLoader sInstance;
-    private Context mContext;
+//    private Context mContext;
     private ImageLoader mImageLoader;
 
-    private ShowImageLoader(final Context mContext, final ImageLoader mImageLoader) {
-        this.mContext = mContext;
+    private ShowImageLoader(Context mContext, ImageLoader mImageLoader) {
+//        this.mContext = mContext;
         (this.mImageLoader = mImageLoader).configure(mContext);
     }
 
@@ -33,67 +30,57 @@ public class ShowImageLoader {
         }
     }
 
-    public void load(final String s, final ImageView imageView) {
-        this.mImageLoader.load(this.mContext, s, imageView);
+    public void load(Context context, String s, ImageView imageView) {
+        this.mImageLoader.load(context, s, imageView);
     }
 
-    public void load(final String s, final ImageView imageView, ImageCallback callback) {
-        this.mImageLoader.load(this.mContext, s, imageView, callback);
+    public void load(Context context, String s, ImageView imageView, ImageCallback callback) {
+        this.mImageLoader.load(context, s, imageView, callback);
     }
 
-    public void load(String s, ImageTarget target) {
-        this.mImageLoader.load(this.mContext, s, target);
+    public void load(Context context, String s, ImageView imageView, @DrawableRes int n) {
+        this.mImageLoader.load(context, s, imageView, n);
     }
 
-//    public void load(final String s, final ImageView imageView) {
-//        this.mImageLoader.load(mContext, s, imageView);
+
+
+//    public void fetchImageForSize(ShowImageLoader.AspectRatios ratios, String... imageUrls) {
+//        this.mImageLoader.fetchImageForSize(mContext, ratios, imageUrls);
 //    }
 
-
-
-    public void load(final String s, final ImageView imageView, @DrawableRes final int n) {
-        this.mImageLoader.load(this.mContext, s, imageView, n);
-    }
-
-
-
-    public void fetchImageForSize(final ShowImageLoader.AspectRatios ratios, final String... imageUrls) {
-        this.mImageLoader.fetchImageForSize(mContext, ratios, imageUrls);
-    }
-
-//    public void loadImageForPhotoAtSize(final Photo photo, final int n, final ImageView imageView) {
+//    public void loadImageForPhotoAtSize(Photo photo, int n, ImageView imageView) {
 //        this.load(photo.getImageUrlForSize(n), imageView);
 //    }
 //
-//    public void loadImageForPhotoAtSize(final Photo photo, final int n, final ImageView imageView, @DrawableRes final int n2) {
+//    public void loadImageForPhotoAtSize(Photo photo, int n, ImageView imageView, @DrawableRes int n2) {
 //        this.load(photo.getImageUrlForSize(n), imageView, n2);
 //    }
 
-    public void prefetch(final List<String> list) {
-        this.mImageLoader.prefetch(this.mContext, (String[])list.toArray(new String[list.size()]));
-    }
+//    public void prefetch(List<String> list) {
+//        this.mImageLoader.prefetch(this.mContext, (String[])list.toArray(new String[list.size()]));
+//    }
+//
+//    public void prefetch(String... array) {
+//        this.mImageLoader.prefetch(this.mContext, array);
+//    }
 
-    public void prefetch(final String... array) {
-        this.mImageLoader.prefetch(this.mContext, array);
-    }
-
-//    public void prefetchImageForPhotosAtSize(final int n, final List<Photo> list) {
-//        final String[] array = new String[list.size()];
+//    public void prefetchImageForPhotosAtSize(int n, List<Photo> list) {
+//        String[] array = new String[list.size()];
 //        for (int i = 0; i < list.size(); ++i) {
 //            array[i] = list.get(i).getImageUrlForSize(n);
 //        }
 //        this.mImageLoader.prefetch(this.mContext, array);
 //    }
 //
-//    public void prefetchImageForPhotosAtSize(final int n, final Photo... array) {
-//        final String[] array2 = new String[array.length];
+//    public void prefetchImageForPhotosAtSize(int n, Photo... array) {
+//        String[] array2 = new String[array.length];
 //        for (int i = 0; i < array.length; ++i) {
 //            array2[i] = array[i].getImageUrlForSize(n);
 //        }
 //        this.mImageLoader.prefetch(this.mContext, array2);
 //    }
 
-    public void setImageLoader(final ImageLoader mImageLoader) {
+    public void setImageLoader(ImageLoader mImageLoader) {
         this.mImageLoader = mImageLoader;
     }
 
@@ -109,7 +96,7 @@ public class ShowImageLoader {
         mImageLoader.resume(context);
     }
 
-    public void cancelRequest() {
-        mImageLoader.cancelRequest(mContext);
+    public void cancelRequest(Context context) {
+        mImageLoader.cancelRequest(context);
     }
 }

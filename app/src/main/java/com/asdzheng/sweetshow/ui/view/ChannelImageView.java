@@ -1,11 +1,11 @@
 package com.asdzheng.sweetshow.ui.view;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.AttributeSet;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 
+import com.asdzheng.sweetshow.R;
 import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
 import com.asdzheng.sweetshow.utils.recyclerview.Size;
 
@@ -25,12 +25,12 @@ public class ChannelImageView extends ImageView {
         //只有在重新第一次或者宽高改变时才需重新请求图片
         if(size == null) {
             size = new Size(getWidth(), getHeight());
-            ShowImageLoader.getSharedInstance().load(mPhoto, this);
+            ShowImageLoader.getSharedInstance().load(getContext(), mPhoto, this);
         } else {
             if(size.getWidth() != getWidth() && size.getHeight() != getHeight()) {
                 size.setWidth(getWidth());
                 size.setHeight(getHeight());
-                ShowImageLoader.getSharedInstance().load( mPhoto, this);
+                ShowImageLoader.getSharedInstance().load(getContext(), mPhoto, this);
             }
         }
 
@@ -54,13 +54,13 @@ public class ChannelImageView extends ImageView {
     private void init(final AttributeSet set, final int n) {
         this.setScaleType(ImageView.ScaleType.FIT_XY);
         this.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        this.setBackgroundColor(Color.GRAY);
+        this.setBackgroundColor(getResources().getColor(R.color.chanel_image_bg));
     }
 
     public void bind(final String s) {
         mPhoto = s;
         if(getWidth() != 0 && getHeight() != 0) {
-            ShowImageLoader.getSharedInstance().load(mPhoto, this);
+            ShowImageLoader.getSharedInstance().load(getContext(), mPhoto, this);
         }
     }
 
