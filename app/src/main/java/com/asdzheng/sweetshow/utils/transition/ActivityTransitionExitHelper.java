@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.View;
 import android.view.ViewTreeObserver;
 import android.view.animation.AccelerateInterpolator;
@@ -37,7 +38,7 @@ public class ActivityTransitionExitHelper {
     private static final int SCALE_ANIM_DURATION = 500;
 
     private Intent fromIntent;//intent from pre activity
-    private View toView;//target view show in this activity
+    private PhotoView toView;//target view show in this activity
     private View background; //root view of this activity
     private ColorDrawable bgDrawable; //background color
     private float leftDelta;
@@ -69,7 +70,7 @@ public class ActivityTransitionExitHelper {
      * @return
      */
     public ActivityTransitionExitHelper toView(View toView) {
-        this.toView = toView;
+        this.toView = (PhotoView) toView;
         return this;
     }
 
@@ -107,15 +108,32 @@ public class ActivityTransitionExitHelper {
                     int viewLocation[] = new int[2];
                     toView.getLocationOnScreen(viewLocation);
                     leftDelta = thumbnailLeft - toView.getLeft();
-                    topDelta = thumbnailTop - toView.getTop();
                     //Note: widthDelta must be float
                     widthDelta = (float) thumbnailWidth / toView.getWidth();
-                    heightDelta = (float) thumbnailHeight / size.getHeight();
 
-                    topDelta = topDelta - ((toView.getHeight() - size.getHeight()) / 2) * heightDelta;
+                    //如果drawble还没有缓存到内存中，使用传过来预估值（有误差）
+                    if (toView.getDrawable() == null) {
+                        if (size.getHeight() > toView.getHeight()) {
+                            size.setHeight(toView.getHeight());
+                        }
+//                        heightDelta = (float) thumbnailHeight / size.getHeight();
 
-                    LogUtil.i(TAG, "thumbnailWidth " + thumbnailWidth + " | thumbnailHeight " +
-                            thumbnailHeight + "| width " + toView.getWidth() + " | size.getHeight()" + size.getHeight() + " topDelta = " + topDelta);
+                        setScaleHeight(size.getHeight());
+                        setTranslationY(size.getHeight());
+
+//                        topDelta = thumbnailTop - toView.getTop();
+//                        topDelta = topDelta - ((toView.getHeight() - size.getHeight()) / 2) * heightDelta;
+                        LogUtil.i(TAG, size.getHeight() + " topDelta = " + topDelta);
+                    } else {
+//                        heightDelta = (float) thumbnailHeight / toView.getDisplayRect().height();
+                        setScaleHeight(toView.getDisplayRect().height());
+                        setTranslationY(toView.getDisplayRect().height());
+//
+//                        topDelta = thumbnailTop - toView.getTop();
+//                        topDelta = topDelta - ((toView.getHeight() - toView.getDisplayRect().height()) / 2) * heightDelta;
+
+                        LogUtil.w(TAG, " topDelta = " + topDelta + "toView Height " + toView.getDisplayRect().height());
+                    }
 
                     runEnterAnimation();
                     return true;
@@ -136,47 +154,38 @@ public class ActivityTransitionExitHelper {
 
         toView.animate().translationX(0).translationY(0)
                 .scaleX(1).scaleY(1).setDuration(DEFUALT_ANIM_DURATION)
-                .setInterpolator(accelerator).withEndAction(new Runnable() {
-            @Override
-            public void run() {
-                LogUtil.w(TAG, "end start");
-                isStarting = false;
-            }
-        }).start();
+                .setInterpolator(accelerator).start();
 
         ObjectAnimator bgAnim = ObjectAnimator.ofInt(bgDrawable, "alpha", 0, 255);
         bgAnim.setInterpolator(accelerator);
         bgAnim.setDuration(DEFUALT_ANIM_DURATION);
         bgAnim.start();
 
+        //防止双击，在还没显示全就退出
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                isStarting = false;
+            }
+        }, 500);
+
     }
 
     public void runExitAnimation(final Runnable exit) {
 
-        PhotoView photoView = (PhotoView) toView;
-//        if (photoView.getScale() > 1) {
-//            LogUtil.i(TAG, "photoView width  " + photoView.getDisplayRect().width() + " | photoView Height " +
-//                    photoView.getDisplayRect().height() + "| toView.width " + toView.getWidth() + " | size.getHeight()" + toView.getHeight() + " | scale " + photoView.getScale());
-//
-////            if(photoView.getDisplayRect().height() < toView.getHeight()) {
-////                heightDelta = thumbnailHeight / photoView.getDisplayRect().height() ;
-////
-//////                topDelta = thumbnailTop - toView.getTop();
-//////                topDelta = topDelta - ((toView.getHeight() - photoView.getDisplayRect().height()) / 2) * heightDelta;
-////            } else {
-//////                topDelta = thumbnailTop - toView.getTop();
-////
-////                heightDelta = thumbnailHeight / (float)toView.getHeight();
-//////            }
-////            animDuration = animDuration +  (int)(animDuration * (photoView.getScale()-1)) / 3;
-////            photoView.setScale(1.0f, true);
-//        }
+        LogUtil.i(TAG, "toView Height " +
+                toView.getDisplayRect().height() + " | scale " + toView.getScale());
 
-        LogUtil.i(TAG, " photoView Height " +
-                photoView.getDisplayRect().height() + " | scale " + photoView.getScale());
+        setScaleHeight(toView.getDisplayRect().height() / toView.getScale());
+        setTranslationY(toView.getDisplayRect().height() / toView.getScale());
 
-        photoView.setZoomTransitionDuration(300);
-        photoView.setScale(1.0f, true);
+//        heightDelta = (float) thumbnailHeight / (toView.getDisplayRect().height() / toView.getScale());
+//        topDelta = thumbnailTop - toView.getTop();
+//        topDelta = topDelta - ((toView.getHeight() - (toView.getDisplayRect().height() / toView.getScale())) / 2) * heightDelta;
+
+        //由于photoView在缩小的时候被放大了，所以缩小前需要将其先恢复到正常状态
+        toView.setZoomTransitionDuration(300);
+        toView.setScale(1.0f, true);
 
         //targetApi 16
         toView.animate().translationX(leftDelta).translationY(topDelta)
@@ -198,4 +207,16 @@ public class ActivityTransitionExitHelper {
         bgAnim.setDuration(animDuration);
         bgAnim.start();
     }
+
+    private void setScaleHeight(float photoNoScaleHeight) {
+        heightDelta = thumbnailHeight / photoNoScaleHeight;
+    }
+
+    private void setTranslationY(float photoNoScaleHeight) {
+        //因为大图有上下黑边，下面的算法就是在扩大和缩小时考虑到上下黑边所带来的影响
+        topDelta = thumbnailTop - toView.getTop();
+        topDelta = topDelta - ((toView.getHeight() - photoNoScaleHeight) / 2) * heightDelta;
+    }
+
+
 }

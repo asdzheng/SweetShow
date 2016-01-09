@@ -5,14 +5,12 @@ import android.view.GestureDetector;
 import android.view.MotionEvent;
 import android.view.View;
 
-import com.asdzheng.sweetshow.MyApplication;
 import com.asdzheng.sweetshow.R;
 import com.asdzheng.sweetshow.imageloaders.ImageCallback;
 import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
 import com.asdzheng.sweetshow.ui.view.MaterialProgressBar;
 import com.asdzheng.sweetshow.utils.LogUtil;
 import com.asdzheng.sweetshow.utils.transition.ActivityTransitionExitHelper;
-import com.squareup.picasso.Picasso;
 
 /**
  * Created by Administrator on 2016-1-4.
@@ -43,17 +41,16 @@ public class ChannelPhotoDetailActivity extends BaseActivity {
     @Override
     protected void initData(Bundle savedInstanceState) {
         String photo = getIntent().getStringExtra("photo");
-
-        transitionExitHelper = ActivityTransitionExitHelper.with(getIntent())
-                .toView(imageView).background(findViewById(R.id.rl_photo_detail)).start(savedInstanceState);
-
         ShowImageLoader.getSharedInstance().load(this, photo, imageView, new ImageCallback() {
 
                     @Override
                     public void onSuccess() {
                         super.onSuccess();
                         progressBar.setVisibility(View.GONE);
-                        LogUtil.i("ChannelPhotoDetailActivity", "imageView.getWidth " + imageView.getDisplayRect().width() + " | imageView.getHeight()" + imageView.getDisplayRect().height());
+                        LogUtil.i("ChannelPhotoDetailActivity", "imageView.getWidth " + imageView.getDisplayRect().width() + " | imageView.getHeight()" + imageView.getDisplayRect().height()
+
+                        );
+//                        +  "| bitmapWidth = " + imageView.getDrawable().getBounds().width() + " | height = " + imageView.getDrawable().getBounds().height()
                     }
 
                     @Override
@@ -66,9 +63,13 @@ public class ChannelPhotoDetailActivity extends BaseActivity {
                 }
         );
 
-        LogUtil.i("detail ", Picasso.with(MyApplication.context).getSnapshot().toString());
+        transitionExitHelper = ActivityTransitionExitHelper.with(getIntent())
+                .toView(imageView).background(findViewById(R.id.rl_photo_detail)).start(savedInstanceState);
+
+
         imageView.setMediumScale(2.0f);
-        imageView.setMaximumScale(2.001f);
+        imageView.setMaximumScale(2.00001f);
+        //默认能过缩放两次，现在设置为一次
         imageView.setOnDoubleTapListener(new GestureDetector.OnDoubleTapListener() {
             @Override
             public boolean onSingleTapConfirmed(MotionEvent e) {
