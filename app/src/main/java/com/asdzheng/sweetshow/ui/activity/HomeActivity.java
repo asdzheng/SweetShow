@@ -1,6 +1,5 @@
 package com.asdzheng.sweetshow.ui.activity;
 
-import android.graphics.Color;
 import android.os.Build;
 import android.os.Bundle;
 import android.support.v4.app.FragmentPagerAdapter;
@@ -8,6 +7,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -18,7 +18,7 @@ import com.asdzheng.sweetshow.ui.adapter.HomeFragmentAdapter;
 /**
  * Created by Administrator on 2016-1-11.
  */
-public class HomeActivity extends BaseActivity {
+public class HomeActivity extends BaseActivity implements View.OnClickListener {
 
     Toolbar homeToolbar;
     ViewPager vpHome;
@@ -63,19 +63,13 @@ public class HomeActivity extends BaseActivity {
             @Override
             public void onPageSelected(int position) {
                 if (position == 0) {
-                    ivHome.setImageResource(R.drawable.home_selected);
-                    ivDiscover.setImageResource(R.drawable.discover_night);
-                    ivHot.setImageResource(R.drawable.profile_night);
+                    selectFragment(R.drawable.home_selected, R.drawable.discover_night, R.drawable.profile_night);
 
                 } else if (position == 1) {
-                    ivHome.setImageResource(R.drawable.home_night);
-                    ivDiscover.setImageResource(R.drawable.discover_selected);
-                    ivHot.setImageResource(R.drawable.profile_night);
+                    selectFragment(R.drawable.home_night, R.drawable.discover_selected, R.drawable.profile_night);
 
                 } else {
-                    ivHome.setImageResource(R.drawable.home_night);
-                    ivDiscover.setImageResource(R.drawable.discover_night);
-                    ivHot.setImageResource(R.drawable.profile_selected);
+                    selectFragment(R.drawable.home_night, R.drawable.discover_night, R.drawable.profile_selected);
                 }
             }
 
@@ -92,6 +86,16 @@ public class HomeActivity extends BaseActivity {
                 return false;
             }
         });
+
+        ivDiscover.setOnClickListener(this);
+        ivHome.setOnClickListener(this);
+        ivHot.setOnClickListener(this);
+    }
+
+    private void selectFragment(int home_night, int discover_night, int profile_selected) {
+        ivHome.setImageResource(home_night);
+        ivDiscover.setImageResource(discover_night);
+        ivHot.setImageResource(profile_selected);
     }
 
     @Override
@@ -99,5 +103,21 @@ public class HomeActivity extends BaseActivity {
         super.onCreateOptionsMenu(menu);
         getMenuInflater().inflate(R.menu.menu_home, menu);
         return true;
+    }
+
+    @Override
+    public void onClick(View v) {
+        int id = v.getId();
+        if(id == R.id.iv_toolbar_home) {
+            selectFragment(R.drawable.home_selected, R.drawable.discover_night, R.drawable.profile_night);
+            vpHome.setCurrentItem(0, true);
+        } else if(id == R.id.iv_toolbar_discover) {
+            selectFragment(R.drawable.home_night, R.drawable.discover_selected, R.drawable.profile_night);
+            vpHome.setCurrentItem(1, true);
+        } else if(id == R.id.iv_toolbar_hot) {
+            selectFragment(R.drawable.home_night, R.drawable.discover_night, R.drawable.profile_selected);
+            vpHome.setCurrentItem(2, true);
+
+        }
     }
 }
