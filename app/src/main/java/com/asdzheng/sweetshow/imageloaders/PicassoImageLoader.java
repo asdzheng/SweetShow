@@ -48,7 +48,7 @@ public class PicassoImageLoader implements ImageLoader {
 //            }
 
         } else {
-            Picasso.with(context).load(s).tag(context).fit().into(imageView);
+            Picasso.with(context).load(s).tag(context).into(imageView);
         }
     }
 

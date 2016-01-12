@@ -34,24 +34,19 @@ import jp.wasabeef.recyclerview.adapters.AnimationAdapter;
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 
 public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout.OnRefreshListener {
-    //SexyChannel
-    public static final String SEXY_CHANNEL = "/channel/1033563/senses";
 
-    public static final String BEAUTY_CHANNEL = "/channel/1015326/senses";
     @Bind(R.id.recycler_channel_view)
     RecyclerView recyclerChannelView;
     @Bind(R.id.wave_channel)
     WaveSwipeRefreshLayout waveChannel;
 
-    RequestQueue queue;
 
     int page = 1;
-
+    RequestQueue queue;
     List<NewChannelInfoDetailDto> list;
-
+    private String nextStr = UrlUtil.BEAUTY_CHANNEL;
     private PhotosAdapter mPhotosAdapter;
 
-    private String nextStr = BEAUTY_CHANNEL;
 
     @NonNull
     private void requestData(final String next) {
@@ -101,7 +96,6 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
         });
         request.setTag(this);
         queue.add(request);
-
     }
 
     private List<NewChannelInfoDetailDto> filterEmptyPhotos(List<NewChannelInfoDetailDto> results) {
@@ -144,7 +138,7 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
     @Override
     public void onRefresh() {
         page = 1;
-        nextStr = BEAUTY_CHANNEL;
+        nextStr = UrlUtil.BEAUTY_CHANNEL;
         requestData(nextStr);
     }
 

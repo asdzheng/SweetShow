@@ -8,6 +8,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.support.v4.view.MotionEventCompat;
 import android.support.v4.view.ViewCompat;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.util.AttributeSet;
 import android.util.DisplayMetrics;
@@ -19,8 +20,6 @@ import android.view.ViewGroup;
 import android.view.animation.Animation;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Transformation;
-import android.widget.AbsListView;
-import android.widget.ScrollView;
 
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioLayoutManager;
 
@@ -129,7 +128,7 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
     // refresh was triggered.
     private boolean mReturningToStart;
     private final DecelerateInterpolator mDecelerateInterpolator;
-    private static final int[] LAYOUT_ATTRS = new int[] {
+    private static final int[] LAYOUT_ATTRS = new int[]{
             android.R.attr.enabled
     };
 
@@ -219,12 +218,12 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
      * there is a toolbar or actionbar present.
      *
      * @param scale Set to true if there is no view at a higher z-order than
-     *            where the progress spinner is set to appear.
+     *              where the progress spinner is set to appear.
      * @param start The offset in pixels from the top of this view at which the
-     *            progress spinner should appear.
-     * @param end The offset in pixels from the top of this view at which the
-     *            progress spinner should come to rest after a successful swipe
-     *            gesture.
+     *              progress spinner should appear.
+     * @param end   The offset in pixels from the top of this view at which the
+     *              progress spinner should come to rest after a successful swipe
+     *              gesture.
      */
     public void setProgressViewOffset(boolean scale, int start, int end) {
         mScale = scale;
@@ -235,7 +234,7 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
         mCircleView.invalidate();
     }
 
-    public void setWaveMaxHeight(int waveMaxHeight){
+    public void setWaveMaxHeight(int waveMaxHeight) {
         mWaveMaxHeight = waveMaxHeight;
     }
 
@@ -246,10 +245,10 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
      * toolbar or actionbar present.
      *
      * @param scale Set to true if there is no view at a higher z-order than
-     *            where the progress spinner is set to appear.
-     * @param end The offset in pixels from the top of this view at which the
-     *            progress spinner should come to rest after a successful swipe
-     *            gesture.
+     *              where the progress spinner is set to appear.
+     * @param end   The offset in pixels from the top of this view at which the
+     *              progress spinner should come to rest after a successful swipe
+     *              gesture.
      */
     public void setProgressViewEndTarget(boolean scale, int end) {
         mSpinnerFinalOffset = end;
@@ -314,7 +313,7 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
 
 
         createProgressView();
-        createWaterWaveView(context,attrs);
+        createWaterWaveView(context, attrs);
         ViewCompat.setChildrenDrawingOrderEnabled(this, true);
         // the absolute offset has to take into account that the circle starts at an offset
 
@@ -338,7 +337,7 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
     }
 
     private void createProgressView() {
-        mCircleView = new CircleImageView(getContext(), CIRCLE_BG_LIGHT, CIRCLE_DIAMETER/2);
+        mCircleView = new CircleImageView(getContext(), CIRCLE_BG_LIGHT, CIRCLE_DIAMETER / 2);
         mProgress = new MaterialProgressDrawable(getContext(), this);
         mProgress.setBackgroundColor(CIRCLE_BG_LIGHT);
         mCircleView.setImageDrawable(mProgress);
@@ -346,8 +345,8 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
         addView(mCircleView);
     }
 
-    private void createWaterWaveView(Context context, AttributeSet attrs){
-        mWaterWave = new WaterWave(context,attrs);
+    private void createWaterWaveView(Context context, AttributeSet attrs) {
+        mWaterWave = new WaterWave(context, attrs);
         mWaterWave.setVisibility(GONE);
         addView(mWaterWave);
     }
@@ -393,31 +392,31 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
     }
 
 
-    public void setLoading(final boolean loading){
+    public void setLoading(final boolean loading) {
 
 
-        if(loading){
+        if (loading) {
             mLoading = loading;
             mWaterWave.setVisibility(View.VISIBLE);
-            ValueAnimator valueAnimator = ValueAnimator.ofInt(20,40,60,80,100);
+            ValueAnimator valueAnimator = ValueAnimator.ofInt(20, 40, 60, 80, 100);
             valueAnimator.setDuration(500);
             valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
-                    mWaterWave.setProgress((int)animation.getAnimatedValue());
+                    mWaterWave.setProgress((int) animation.getAnimatedValue());
                 }
             });
-            if(mListener != null){
+            if (mListener != null) {
                 mListener.onLoad();
             }
             valueAnimator.start();
-        }else {
-            ValueAnimator valueAnimator = ValueAnimator.ofInt(100,80,60,40,20);
+        } else {
+            ValueAnimator valueAnimator = ValueAnimator.ofInt(100, 80, 60, 40, 20);
             valueAnimator.setDuration(500);
             valueAnimator.addUpdateListener(new ValueAnimator.AnimatorUpdateListener() {
                 @Override
                 public void onAnimationUpdate(ValueAnimator animation) {
-                    mWaterWave.setProgress((int)animation.getAnimatedValue());
+                    mWaterWave.setProgress((int) animation.getAnimatedValue());
                 }
             });
             valueAnimator.addListener(new Animator.AnimatorListener() {
@@ -471,6 +470,7 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
 
     /**
      * Pre API 11, this does an alpha animation.
+     *
      * @param progress
      */
     private void setAnimationProgress(float progress) {
@@ -526,7 +526,7 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
             @Override
             public void applyTransformation(float interpolatedTime, Transformation t) {
                 mProgress
-                        .setAlpha((int) (startingAlpha+ ((endingAlpha - startingAlpha)
+                        .setAlpha((int) (startingAlpha + ((endingAlpha - startingAlpha)
                                 * interpolatedTime)));
             }
         };
@@ -603,7 +603,7 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
 
     /**
      * @return Whether the SwipeRefreshWidget is actively showing refresh
-     *         progress.
+     * progress.
      */
     public boolean isRefreshing() {
         return mRefreshing;
@@ -615,7 +615,7 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
         if (mTarget == null) {
             for (int i = 0; i < getChildCount(); i++) {
                 View child = getChildAt(i);
-                if (!child.equals(mCircleView)&&!child.equals(mWaterWave)) {
+                if (!child.equals(mCircleView) && !child.equals(mWaterWave)) {
                     mTarget = child;
                     break;
                 }
@@ -632,8 +632,8 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
 //        if(mCircleView.getVisibility() == VISIBLE){
 //            drawChild(canvas,mCircleView,getDrawingTime());
 //        }
-        if(mWaterWave.getVisibility() == VISIBLE){
-            drawChild(canvas,mWaterWave,getDrawingTime());
+        if (mWaterWave.getVisibility() == VISIBLE) {
+            drawChild(canvas, mWaterWave, getDrawingTime());
         }
 
     }
@@ -675,7 +675,7 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
 
         int waveHeight = mWaterWave.getMeasuredHeight();
         int waveWidth = mWaterWave.getMeasuredWidth();
-        mWaterWave.layout(0,height - waveHeight,waveWidth,height);
+        mWaterWave.layout(0, height - waveHeight, waveWidth, height);
 
     }
 
@@ -720,76 +720,86 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
      * @return Diameter in pixels of the progress circle view.
      */
     public int getProgressCircleDiameter() {
-        return mCircleView != null ?mCircleView.getMeasuredHeight() : 0;
+        return mCircleView != null ? mCircleView.getMeasuredHeight() : 0;
     }
 
     /**
      * @return Whether it is possible for the child view of this layout to
-     *         scroll up. Override this if the child view is a custom view.
+     * scroll up. Override this if the child view is a custom view.
      */
     public boolean canChildScrollUp() {
-        if (android.os.Build.VERSION.SDK_INT < 14) {
-            if (mTarget instanceof AbsListView) {
-                final AbsListView absListView = (AbsListView) mTarget;
-                return absListView.getChildCount() > 0
-                        && (absListView.getFirstVisiblePosition() > 0 || absListView.getChildAt(0)
-                        .getTop() < absListView.getPaddingTop());
-            } else {
-                return ViewCompat.canScrollVertically(mTarget, -1) || mTarget.getScrollY() > 0;
-            }
-        } else {
-            if (mTarget instanceof RecyclerView) {
-                final RecyclerView recyclerView = (RecyclerView) mTarget;
+//        if (android.os.Build.VERSION.SDK_INT < 14) {
+//            if (mTarget instanceof AbsListView) {
+//                final AbsListView absListView = (AbsListView) mTarget;
+//                return absListView.getChildCount() > 0
+//                        && (absListView.getFirstVisiblePosition() > 0 || absListView.getChildAt(0)
+//                        .getTop() < absListView.getPaddingTop());
+//            } else {
+//                return ViewCompat.canScrollVertically(mTarget, -1) || mTarget.getScrollY() > 0;
+//            }
+//        } else {
+        if (mTarget instanceof RecyclerView) {
+            final RecyclerView recyclerView = (RecyclerView) mTarget;
 
-                if(recyclerView.getLayoutManager() instanceof AspectRatioLayoutManager) {
-                    AspectRatioLayoutManager layoutManager = (AspectRatioLayoutManager) recyclerView.getLayoutManager();
-                    return recyclerView.getChildCount() > 0
-                            && (layoutManager.findFirstVisibleItemPosition() > 0 || recyclerView.getChildAt(0)
-                            .getTop() < recyclerView.getPaddingTop());
-                } else {
-                    return ViewCompat.canScrollVertically(mTarget, -1);
-                }
+            if (recyclerView.getLayoutManager() instanceof AspectRatioLayoutManager) {
+                AspectRatioLayoutManager layoutManager = (AspectRatioLayoutManager) recyclerView.getLayoutManager();
+                return recyclerView.getChildCount() > 0
+                        && (layoutManager.findFirstVisibleItemPosition() > 0 || recyclerView.getChildAt(0)
+                        .getTop() < recyclerView.getPaddingTop());
+            } else if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                return recyclerView.getChildCount() > 0
+                        && (layoutManager.findFirstVisibleItemPosition() > 0 || recyclerView.getChildAt(0)
+                        .getTop() < recyclerView.getPaddingTop());
             } else {
                 return ViewCompat.canScrollVertically(mTarget, -1);
+
             }
+        } else {
+            return ViewCompat.canScrollVertically(mTarget, -1);
         }
+//        }
     }
 
     //是否recyclerview可向下滑动
     public boolean canChildScrollDown() {
-        if (android.os.Build.VERSION.SDK_INT < 14) {
-            if (mTarget instanceof AbsListView) {
-                final AbsListView absListView = (AbsListView) mTarget;
-                return absListView.getCount() > 0
-                        && (absListView.getLastVisiblePosition() < absListView.getCount() - 1 || absListView
-                        .getChildAt(absListView.getLastVisiblePosition() - absListView.getFirstVisiblePosition())
-                        .getBottom() > absListView.getPaddingBottom() + getMeasuredHeight());
-            } else if (mTarget instanceof ScrollView) { // ScrollView
-                return mTarget.getScrollY() + mTarget.getMeasuredHeight() < ((ScrollView)mTarget).getChildAt(0).getMeasuredHeight();
-            } else {
-                return true;
-            }
-        } else {
+//        if (android.os.Build.VERSION.SDK_INT < 14) {
+//            if (mTarget instanceof AbsListView) {
+//                final AbsListView absListView = (AbsListView) mTarget;
+//                return absListView.getCount() > 0
+//                        && (absListView.getLastVisiblePosition() < absListView.getCount() - 1 || absListView
+//                        .getChildAt(absListView.getLastVisiblePosition() - absListView.getFirstVisiblePosition())
+//                        .getBottom() > absListView.getPaddingBottom() + getMeasuredHeight());
+//            } else if (mTarget instanceof ScrollView) { // ScrollView
+//                return mTarget.getScrollY() + mTarget.getMeasuredHeight() < ((ScrollView)mTarget).getChildAt(0).getMeasuredHeight();
+//            } else {
+//                return true;
+//            }
+//        } else {
 
-            if (mTarget instanceof RecyclerView) {
-                final RecyclerView recyclerView = (RecyclerView) mTarget;
-
-                if(recyclerView.getLayoutManager() instanceof AspectRatioLayoutManager) {
-                    //这里还需计最后一个可见的未知是否小于最后一个位置
-                    AspectRatioLayoutManager layoutManager = (AspectRatioLayoutManager) recyclerView.getLayoutManager();
+        if (mTarget instanceof RecyclerView) {
+            final RecyclerView recyclerView = (RecyclerView) mTarget;
+            if (recyclerView.getLayoutManager() instanceof AspectRatioLayoutManager) {
+                //这里还需计最后一个可见的未知是否小于最后一个位置
+                AspectRatioLayoutManager layoutManager = (AspectRatioLayoutManager) recyclerView.getLayoutManager();
 //                    LogUtil.i(LOG_TAG, "getmLastVisiblePosition " + layoutManager.getmLastVisiblePosition() + " | getItemCount "  + recyclerView.getAdapter().getItemCount());
 //                    LogUtil.i(LOG_TAG, " layoutManager layoutDecodeBottom " + layoutManager.getDecoratedBottom(recyclerView.getChildAt(recyclerView.getChildCount() - 1)) + " | getMeasuredHeight "+ recyclerView.getMeasuredHeight());
-                    return recyclerView.getChildCount() > 0
-                            && (layoutManager.getmLastVisiblePosition() < recyclerView.getAdapter().getItemCount() - 1 ||
-                            layoutManager.getDecoratedBottom(recyclerView.getChildAt(recyclerView.getChildCount() - 1)) > recyclerView.getPaddingBottom() + recyclerView.getMeasuredHeight());
-                } else {
-                    return ViewCompat.canScrollVertically(mTarget, -1);
-                }
-
+                return recyclerView.getChildCount() > 0
+                        && (layoutManager.getmLastVisiblePosition() < recyclerView.getAdapter().getItemCount() - 1 ||
+                        layoutManager.getDecoratedBottom(recyclerView.getChildAt(recyclerView.getChildCount() - 1)) > recyclerView.getPaddingBottom() + recyclerView.getMeasuredHeight());
+            } else if (recyclerView.getLayoutManager() instanceof LinearLayoutManager) {
+                LinearLayoutManager layoutManager = (LinearLayoutManager) recyclerView.getLayoutManager();
+                return recyclerView.getChildCount() > 0
+                        && (layoutManager.findLastCompletelyVisibleItemPosition() < recyclerView.getAdapter().getItemCount() - 1 ||
+                        layoutManager.getDecoratedBottom(recyclerView.getChildAt(recyclerView.getChildCount() - 1)) > recyclerView.getPaddingBottom() + recyclerView.getMeasuredHeight());
             } else {
                 return ViewCompat.canScrollVertically(mTarget, -1);
             }
+
+        } else {
+            return ViewCompat.canScrollVertically(mTarget, -1);
         }
+//        }
     }
 
     @Override
@@ -802,7 +812,7 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
             mReturningToStart = false;
         }
 
-        if (mRefreshing || mReturningToStart || (mLoading && mWaterWave.getVisibility()==VISIBLE)){
+        if (mRefreshing || mReturningToStart || (mLoading && mWaterWave.getVisibility() == VISIBLE)) {
             return false;
         }
 
@@ -831,22 +841,20 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
                 final float yDiff = y - mInitialDownY;
 
                 if (yDiff > 0) {
-                    if(canChildScrollUp() || mListener == null){
+                    if (canChildScrollUp() || mListener == null) {
                         return false;
-                    }else {
+                    } else {
                         if (yDiff > mTouchSlop && !mIsBeingDragged && canRefresh) {
                             mInitialMotionY = mInitialDownY + mTouchSlop;
                             mIsBeingDragged = true;
                             mProgress.setAlpha(STARTING_PROGRESS_ALPHA);
                         }
                     }
-                }
-                else
-                {
-                    if(canChildScrollDown() || mListener == null){
+                } else {
+                    if (canChildScrollDown() || mListener == null) {
                         return false;
-                    }else {
-                        if (yDiff < 0 && canLoadMore){
+                    } else {
+                        if (yDiff < 0 && canLoadMore) {
                             mLoading = true;
                             return true;
                         }
@@ -969,7 +977,7 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
                 }
 
                 //是否显示下加载更多的波浪动画
-                if(mLoading && !mRefreshing){
+                if (mLoading && !mRefreshing) {
                     if (mWaterWave.getVisibility() != View.VISIBLE) {
                         setLoading(mLoading);
                     }
@@ -995,7 +1003,7 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
                     return false;
                 }
 
-                if(mLoading){
+                if (mLoading) {
                     return false;
                 }
 
@@ -1112,7 +1120,7 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
         mScaleDownToStartAnimation = new Animation() {
             @Override
             public void applyTransformation(float interpolatedTime, Transformation t) {
-                float targetScale = (mStartingScale + (-mStartingScale  * interpolatedTime));
+                float targetScale = (mStartingScale + (-mStartingScale * interpolatedTime));
                 setAnimationProgress(targetScale);
                 moveToStart(interpolatedTime);
             }
@@ -1167,6 +1175,7 @@ public class WaveSwipeRefreshLayout extends ViewGroup {
      */
     public interface OnRefreshListener {
         void onRefresh();
+
         void onLoad();
     }
 }
