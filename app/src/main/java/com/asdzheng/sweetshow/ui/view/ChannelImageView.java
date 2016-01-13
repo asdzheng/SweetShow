@@ -54,7 +54,7 @@ public class ChannelImageView extends ImageView {
     private void init(final AttributeSet set, final int n) {
         this.setScaleType(ImageView.ScaleType.FIT_XY);
         this.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        this.setBackgroundColor(getResources().getColor(R.color.chanel_image_bg));
+        this.setBackgroundColor(getResources().getColor(R.color.default_image_bg));
     }
 
     public void bind(final String s) {

@@ -10,6 +10,6 @@
     <color name="placeholder">#e1e4eb</color>
     <color name="error">#ff9999</color>
 
-    <color name="chanel_image_bg">#ffb9c1c7</color>
+    <color name="default_image_bg">#ffb9c1c7</color>
 
 </resources>

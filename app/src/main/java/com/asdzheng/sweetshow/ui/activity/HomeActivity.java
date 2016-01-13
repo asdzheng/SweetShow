@@ -54,6 +54,7 @@ public class HomeActivity extends BaseActivity implements View.OnClickListener {
     protected void initData(Bundle savedInstanceState) {
         fragmentPagerAdapter = new HomeFragmentAdapter(getSupportFragmentManager());
         vpHome.setAdapter(fragmentPagerAdapter);
+        vpHome.setOffscreenPageLimit(2);
         vpHome.addOnPageChangeListener(new ViewPager.OnPageChangeListener() {
             @Override
             public void onPageScrolled(int position, float positionOffset, int positionOffsetPixels) {

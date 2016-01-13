@@ -140,7 +140,7 @@ public class HomeFragment extends Fragment implements WaveSwipeRefreshLayout.OnR
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         this.recyclerHomeView.setLayoutManager(layoutManager);
 //        layoutManager.setMaxRowHeight(getResources().getDisplayMetrics().heightPixels / 3);
-        this.recyclerHomeView.addItemDecoration(new LinearSpacingItemDecoration(MeasUtils.dpToPx(4.0f, getContext())));
+        this.recyclerHomeView.addItemDecoration(new LinearSpacingItemDecoration(MeasUtils.dpToPx(16.0f, getContext()), false));
 
         recyclerHomeView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 
