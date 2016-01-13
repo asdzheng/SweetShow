@@ -26,7 +26,9 @@ import com.asdzheng.sweetshow.http.UrlUtil;
 import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
 import com.asdzheng.sweetshow.ui.adapter.HomeAdapter;
 import com.asdzheng.sweetshow.ui.view.waveswiperefreshlayout.WaveSwipeRefreshLayout;
+import com.asdzheng.sweetshow.utils.MeasUtils;
 import com.asdzheng.sweetshow.utils.StringUtil;
+import com.asdzheng.sweetshow.utils.recyclerview.LinearSpacingItemDecoration;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -138,7 +140,7 @@ public class HomeFragment extends Fragment implements WaveSwipeRefreshLayout.OnR
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         this.recyclerHomeView.setLayoutManager(layoutManager);
 //        layoutManager.setMaxRowHeight(getResources().getDisplayMetrics().heightPixels / 3);
-//        this.recyclerHomeView.addItemDecoration(new AspectRatioSpacingItemDecoration(MeasUtils.dpToPx(4.0f, this)));
+        this.recyclerHomeView.addItemDecoration(new LinearSpacingItemDecoration(MeasUtils.dpToPx(4.0f, getContext())));
 
         recyclerHomeView.addOnScrollListener(new RecyclerView.OnScrollListener() {
 

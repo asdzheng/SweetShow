@@ -7,10 +7,13 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 
 import com.asdzheng.sweetshow.R;
 import com.asdzheng.sweetshow.bean.NewChannelInfoDetailDto;
 import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
+import com.asdzheng.sweetshow.utils.MeasUtils;
+import com.asdzheng.sweetshow.utils.StringUtil;
 
 import java.util.List;
 
@@ -44,6 +47,10 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.CardViewHolder
 
     @Override
     public void onBindViewHolder(CardViewHolder holder, int position) {
+        float width = MeasUtils.getDisplayWidth();
+        float height = (float) (width / StringUtil.getAspectRadioFromUrl(infos.get(position).photo));
+        holder.ivHome.setLayoutParams(new RelativeLayout.LayoutParams((int) width, (int) height));
+
         ShowImageLoader.getSharedInstance().load(mContext, infos.get(position).photo, holder.ivHome);
     }
 
@@ -52,7 +59,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.CardViewHolder
         return infos.size();
     }
 
-    static class CardViewHolder extends RecyclerView.ViewHolder {
+    static class CardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         @Bind(R.id.iv_home)
         ImageView ivHome;
         @Bind(R.id.iv_home_love)
@@ -61,8 +68,15 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.CardViewHolder
         public CardViewHolder(View itemView) {
             super(itemView);
             ButterKnife.bind(this, itemView);
+
+            ivHome.setOnClickListener(this);
+            ivHomeLove.setOnClickListener(this);
         }
 
+        @Override
+        public void onClick(View v) {
+
+        }
     }
 
     public void clear() {

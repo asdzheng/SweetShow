@@ -96,8 +96,8 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewH
     private void scaleUpAnimation(View view) {
         Activity context = (Activity) view.getContext();
         //因为宽在大图中一直是全屏，高预估为宽放大的比例
-        Size detailSize = new Size(MeasUtils.getDisplayWidth(context), (int)(view.getHeight() *
-            (float)MeasUtils.getDisplayWidth(context) / view.getWidth()));
+        Size detailSize = new Size(MeasUtils.getDisplayWidth(), (int)(view.getHeight() *
+            (float)MeasUtils.getDisplayWidth() / view.getWidth()));
 
 //        LogUtil.w("Adapter", "Size = " + detailSize + " | getHeight = " + view.getHeight() + " scale =" +
 //                Float.parseFloat(String.format("%.2f",(float)MeasUtils.getDisplayWidth(context) / view.getWidth())));
