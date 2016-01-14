@@ -1,5 +1,6 @@
 package com.asdzheng.sweetshow.ui.adapter;
 
+import android.app.Activity;
 import android.content.Context;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
@@ -12,8 +13,10 @@ import android.widget.RelativeLayout;
 import com.asdzheng.sweetshow.R;
 import com.asdzheng.sweetshow.bean.NewChannelInfoDetailDto;
 import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
+import com.asdzheng.sweetshow.ui.activity.ChannelPhotoDetailActivity;
 import com.asdzheng.sweetshow.utils.MeasUtils;
 import com.asdzheng.sweetshow.utils.StringUtil;
+import com.asdzheng.sweetshow.utils.transition.ActivityTransitionEnterHelper;
 
 import java.util.List;
 
@@ -50,8 +53,9 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.CardViewHolder
         float width = MeasUtils.getDisplayWidth();
         float height = (float) (width / StringUtil.getAspectRadioFromUrl(infos.get(position).photo));
         holder.ivHome.setLayoutParams(new RelativeLayout.LayoutParams((int) width, (int) height));
-
-        ShowImageLoader.getSharedInstance().load(mContext, infos.get(position).photo, holder.ivHome);
+        String photo = infos.get(position).photo;
+        holder.ivHome.setTag(photo);
+        ShowImageLoader.getSharedInstance().load(mContext, photo , holder.ivHome);
     }
 
     @Override
@@ -59,7 +63,7 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.CardViewHolder
         return infos.size();
     }
 
-    static class CardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
+     class CardViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener{
         @Bind(R.id.iv_home)
         ImageView ivHome;
         @Bind(R.id.iv_home_love)
@@ -75,8 +79,16 @@ public class HomeAdapter extends RecyclerView.Adapter<HomeAdapter.CardViewHolder
 
         @Override
         public void onClick(View v) {
-
+            if(v == ivHome) {
+                scaleUpAnimation(v);
+            }
         }
+    }
+
+    private void scaleUpAnimation(View view) {
+        Activity context = (Activity) view.getContext();
+        ActivityTransitionEnterHelper.with(context).fromView(view).
+                start(ChannelPhotoDetailActivity.class);
     }
 
     public void clear() {

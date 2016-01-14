@@ -8,8 +8,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.view.View;
 import android.view.ViewTreeObserver;
-import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
+import android.view.animation.Interpolator;
 
 import com.asdzheng.sweetshow.utils.LogUtil;
 import com.asdzheng.sweetshow.utils.recyclerview.Size;
@@ -33,7 +34,7 @@ public class ActivityTransitionExitHelper {
     private final String TAG = this.getClass().getSimpleName();
 
     private final DecelerateInterpolator decelerator = new DecelerateInterpolator();
-    private final AccelerateInterpolator accelerator = new AccelerateInterpolator();
+    private final Interpolator accelerator = new AccelerateDecelerateInterpolator();
     private static final int DEFUALT_ANIM_DURATION = 300;
     private static final int SCALE_ANIM_DURATION = 500;
 

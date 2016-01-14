@@ -52,7 +52,7 @@ public class HomeFragment extends Fragment implements WaveSwipeRefreshLayout.OnR
 
     RequestQueue queue;
     List<NewChannelInfoDetailDto> list;
-    private String nextStr = UrlUtil.BEAUTY_CHANNEL;
+    private String nextStr = UrlUtil.SEXY_CHANNEL;
 
     @Nullable
     @Override

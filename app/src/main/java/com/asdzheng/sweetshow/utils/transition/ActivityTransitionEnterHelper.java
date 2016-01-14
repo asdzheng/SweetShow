@@ -5,6 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 
+import com.asdzheng.sweetshow.utils.MeasUtils;
+import com.asdzheng.sweetshow.utils.recyclerview.Size;
+
 /**
  * Created by Bruce Too
  * On 9/26/15.
@@ -29,14 +32,24 @@ public class ActivityTransitionEnterHelper {
     }
 
     public ActivityTransitionEnterHelper fromView(View fromView) {
+        //因为宽在大图中一直是全屏，高预估为宽放大的比例
+        Size detailSize = new Size(MeasUtils.getDisplayWidth(), (int)(fromView.getHeight() *
+                (float)MeasUtils.getDisplayWidth() / fromView.getWidth()));
+
+//        LogUtil.w("Adapter", "Size = " + detailSize + " | getHeight = " + view.getHeight() + " scale =" +
+//                Float.parseFloat(String.format("%.2f",(float)MeasUtils.getDisplayWidth(context) / view.getWidth())));
+
+        bundle = new Bundle();
+        bundle.putSerializable("size", detailSize);
+        bundle.putString("photo", fromView.getTag().toString());
         this.fromView = fromView;
         return this;
     }
 
-//    public ActivityTransitionEnterHelper imageUrl(String imgUrl) {
-//        this.imgUrl = imgUrl;
-//        return this;
-//    }
+    public ActivityTransitionEnterHelper imageUrl(String imgUrl) {
+        this.imgUrl = imgUrl;
+        return this;
+    }
 
     public ActivityTransitionEnterHelper bundle(Bundle bundle) {
         this.bundle = bundle;
@@ -46,10 +59,10 @@ public class ActivityTransitionEnterHelper {
     public void start(Class target) {
 
         Intent intent = new Intent(activity, target);
-//        int[] screenLocation = new int[2];
-//        fromView.getLocationOnScreen(screenLocation);
-        intent.putExtra(PRE_NAME + ".left", fromView.getLeft()).
-                putExtra(PRE_NAME + ".top", fromView.getTop()).
+        int[] screenLocation = new int[2];
+        fromView.getLocationOnScreen(screenLocation);
+        intent.putExtra(PRE_NAME + ".left",screenLocation[0]).
+                putExtra(PRE_NAME + ".top", screenLocation[1]).
                 putExtra(PRE_NAME + ".width", fromView.getWidth()).
                 putExtra(PRE_NAME + ".height", fromView.getHeight());
 //                putExtra(PRE_NAME + ".x", fromView.getPivotX()).

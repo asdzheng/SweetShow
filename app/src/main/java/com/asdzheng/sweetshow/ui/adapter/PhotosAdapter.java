@@ -2,7 +2,6 @@ package com.asdzheng.sweetshow.ui.adapter;
 
 import android.app.Activity;
 import android.content.Context;
-import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
 import android.util.ArrayMap;
@@ -12,10 +11,8 @@ import android.view.ViewGroup;
 import com.asdzheng.sweetshow.bean.NewChannelInfoDetailDto;
 import com.asdzheng.sweetshow.ui.activity.ChannelPhotoDetailActivity;
 import com.asdzheng.sweetshow.ui.view.ChannelImageView;
-import com.asdzheng.sweetshow.utils.MeasUtils;
 import com.asdzheng.sweetshow.utils.StringUtil;
 import com.asdzheng.sweetshow.utils.recyclerview.AspectRatioLayoutSizeCalculator;
-import com.asdzheng.sweetshow.utils.recyclerview.Size;
 import com.asdzheng.sweetshow.utils.transition.ActivityTransitionEnterHelper;
 
 import java.util.List;
@@ -95,19 +92,8 @@ public class PhotosAdapter extends RecyclerView.Adapter<PhotosAdapter.PhotoViewH
 
     private void scaleUpAnimation(View view) {
         Activity context = (Activity) view.getContext();
-        //因为宽在大图中一直是全屏，高预估为宽放大的比例
-        Size detailSize = new Size(MeasUtils.getDisplayWidth(), (int)(view.getHeight() *
-            (float)MeasUtils.getDisplayWidth() / view.getWidth()));
-
-//        LogUtil.w("Adapter", "Size = " + detailSize + " | getHeight = " + view.getHeight() + " scale =" +
-//                Float.parseFloat(String.format("%.2f",(float)MeasUtils.getDisplayWidth(context) / view.getWidth())));
-
-        Bundle bundle = new Bundle();
-        bundle.putSerializable("size", detailSize);
-        bundle.putString("photo", view.getTag().toString());
-
         ActivityTransitionEnterHelper.with(context).fromView(view).
-                bundle(bundle).start(ChannelPhotoDetailActivity.class);
+               start(ChannelPhotoDetailActivity.class);
     }
 
 }

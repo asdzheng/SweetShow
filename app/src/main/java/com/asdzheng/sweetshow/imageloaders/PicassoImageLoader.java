@@ -12,12 +12,9 @@ import com.asdzheng.sweetshow.utils.ConfigConstants;
 import com.asdzheng.sweetshow.utils.LogUtil;
 import com.squareup.picasso.Callback;
 import com.squareup.picasso.LruCache;
-import com.squareup.picasso.NetworkPolicy;
 import com.squareup.picasso.OkHttpDownloader;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Target;
-
-import java.io.IOException;
 
 /**
  * Created by asdzheng on 2015/12/26.
@@ -112,17 +109,6 @@ public class PicassoImageLoader implements ImageLoader {
     @Override
     public void resume(Context context) {
         Picasso.with(context).resumeTag(context);
-    }
-
-    @Override
-    public Bitmap getBitmapFromCache(Context context, String key)  {
-        try {
-            return Picasso.with(context).load(key).networkPolicy(NetworkPolicy.OFFLINE).get();
-
-        } catch (IOException e) {
-            LogUtil.e("PISCCO", e.toString());
-            return null;
-        }
     }
 
     @Override
