@@ -1,12 +1,23 @@
 package com.asdzheng.sweetshow.bean;
 
+import java.io.Serializable;
+
 /**
  * Created by Administrator on 2016-1-18.
  */
-public class ChannelBean {
+public class ChannelBean implements Serializable{
 
     private String channelName;
     private String channelPhoto;
+    private String channelUrl;
+
+    public String getChannelUrl() {
+        return channelUrl;
+    }
+
+    public void setChannelUrl(String channelUrl) {
+        this.channelUrl = channelUrl;
+    }
 
     public String getChannelName() {
         return channelName;

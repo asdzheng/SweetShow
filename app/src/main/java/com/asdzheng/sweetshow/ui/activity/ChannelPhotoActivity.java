@@ -4,7 +4,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.support.annotation.NonNull;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
+import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.android.volley.Request;
@@ -13,6 +15,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.asdzheng.sweetshow.R;
+import com.asdzheng.sweetshow.bean.ChannelBean;
 import com.asdzheng.sweetshow.bean.NewChannelInfoDetailDto;
 import com.asdzheng.sweetshow.bean.NewChannelInfoDto;
 import com.asdzheng.sweetshow.http.GsonRequest;
@@ -33,7 +36,7 @@ import jp.wasabeef.recyclerview.adapters.AlphaInAnimationAdapter;
 import jp.wasabeef.recyclerview.adapters.AnimationAdapter;
 import jp.wasabeef.recyclerview.adapters.ScaleInAnimationAdapter;
 
-public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout.OnRefreshListener {
+public class ChannelPhotoActivity extends BaseActivity implements WaveSwipeRefreshLayout.OnRefreshListener {
 
     @Bind(R.id.recycler_channel_view)
     RecyclerView recyclerChannelView;
@@ -44,6 +47,8 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
     int page = 1;
     RequestQueue queue;
     List<NewChannelInfoDetailDto> list;
+    @Bind(R.id.toolbar_channel_photo)
+    Toolbar toolbarChannelPhoto;
     private String nextStr = UrlUtil.BEAUTY_CHANNEL;
     private PhotosAdapter mPhotosAdapter;
 
@@ -72,7 +77,7 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
 
                         page++;
 
-                        if(mPhotosAdapter.getItemCount() > 0) {
+                        if (mPhotosAdapter.getItemCount() > 0) {
                             waveChannel.setCanLoadMore(true);
                         } else {
                             waveChannel.setCanLoadMore(false);
@@ -83,11 +88,11 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
             @Override
             public void onErrorResponse(VolleyError error) {
 
-                if(mPhotosAdapter.getItemCount() == 0) {
+                if (mPhotosAdapter.getItemCount() == 0) {
                     waveChannel.setCanLoadMore(false);
                 }
 
-                Toast.makeText(MainActivity.this, "网络连接错误", Toast.LENGTH_SHORT).show();
+                Toast.makeText(ChannelPhotoActivity.this, "网络连接错误", Toast.LENGTH_SHORT).show();
                 Log.w("main", error.toString());
                 waveChannel.setRefreshing(false);
                 waveChannel.setLoading(false);
@@ -125,11 +130,11 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
             public void onScrollStateChanged(RecyclerView recyclerView, int newState) {
                 super.onScrollStateChanged(recyclerView, newState);
                 if (newState == RecyclerView.SCROLL_STATE_IDLE) {
-                    ShowImageLoader.getSharedInstance().resumeTag(MainActivity.this);
+                    ShowImageLoader.getSharedInstance().resumeTag(ChannelPhotoActivity.this);
                 } else if (newState == RecyclerView.SCROLL_STATE_DRAGGING) {
-                    ShowImageLoader.getSharedInstance().pauseTag(MainActivity.this);
+                    ShowImageLoader.getSharedInstance().pauseTag(ChannelPhotoActivity.this);
                 } else if (newState == RecyclerView.SCROLL_STATE_SETTLING) {
-                    ShowImageLoader.getSharedInstance().pauseTag(MainActivity.this);
+                    ShowImageLoader.getSharedInstance().pauseTag(ChannelPhotoActivity.this);
                 }
             }
         });
@@ -149,7 +154,7 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
 
     @Override
     protected int setLayout() {
-        return R.layout.activity_main;
+        return R.layout.activity_channel_photo;
     }
 
     @Override
@@ -163,6 +168,14 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
 
     @Override
     protected void initData(Bundle savedInstanceState) {
+        ChannelBean channel = (ChannelBean) getIntent().getSerializableExtra("channel");
+        nextStr = channel.getChannelUrl();
+
+        setSupportActionBar(toolbarChannelPhoto);
+        getSupportActionBar().setDisplayShowTitleEnabled(false);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbarChannelPhoto.setTitle(channel.getChannelName());
+
         queue = Volley.newRequestQueue(this);
         list = new ArrayList<>();
         setupRecyclerView();
@@ -174,7 +187,6 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
                 requestData(nextStr);
             }
         });
-
     }
 
     @Override
@@ -183,7 +195,12 @@ public class MainActivity extends BaseActivity implements WaveSwipeRefreshLayout
         super.onDestroy();
     }
 
-
-
-
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                finish();
+        }
+        return super.onOptionsItemSelected(item);
+    }
 }

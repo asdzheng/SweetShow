@@ -1,6 +1,7 @@
 package com.asdzheng.sweetshow.ui.adapter;
 
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -11,6 +12,7 @@ import android.widget.TextView;
 import com.asdzheng.sweetshow.R;
 import com.asdzheng.sweetshow.bean.ChannelBean;
 import com.asdzheng.sweetshow.imageloaders.ShowImageLoader;
+import com.asdzheng.sweetshow.ui.activity.ChannelPhotoActivity;
 import com.asdzheng.sweetshow.utils.LogUtil;
 import com.asdzheng.sweetshow.utils.MeasUtils;
 
@@ -23,7 +25,6 @@ import butterknife.ButterKnife;
  * Created by Administrator on 2016-1-18.
  */
 public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.DiscoverHolder> {
-
 
     private List<ChannelBean> channels;
     private Context context;
@@ -48,7 +49,9 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.Discov
     public void onBindViewHolder(DiscoverHolder holder, int position) {
         LogUtil.i("DiscoverAdapter", position + "");
         holder.tvDiscover.setText(channels.get(position).getChannelName());
+        holder.ivDiscover.setTag(channels.get(position));
         ShowImageLoader.getSharedInstance().load(context, channels.get(position).getChannelPhoto(), holder.ivDiscover);
+
     }
 
     class DiscoverHolder extends RecyclerView.ViewHolder {
@@ -61,6 +64,15 @@ public class DiscoverAdapter extends RecyclerView.Adapter<DiscoverAdapter.Discov
             int width = (MeasUtils.getDisplayWidth() - MeasUtils.dpToPx(4, context)) / 2;
             itemView.setLayoutParams(new ViewGroup.LayoutParams(width, width));
             ButterKnife.bind(this, itemView);
+
+            ivDiscover.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View v) {
+                    Intent intent = new Intent(context, ChannelPhotoActivity.class);
+                    intent.putExtra("channel", (ChannelBean) v.getTag());
+                    context.startActivity(intent);
+                }
+            });
         }
     }
 }

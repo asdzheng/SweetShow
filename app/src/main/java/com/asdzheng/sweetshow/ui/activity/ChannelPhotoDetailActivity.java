@@ -29,7 +29,7 @@ public class ChannelPhotoDetailActivity extends BaseActivity {
 
     @Override
     protected int setLayout() {
-        return R.layout.activity_photo_detail;
+        return R.layout.activity_channel_photo_detail;
     }
 
     @Override

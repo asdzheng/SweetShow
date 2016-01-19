@@ -10,6 +10,7 @@ import android.view.ViewGroup;
 
 import com.asdzheng.sweetshow.R;
 import com.asdzheng.sweetshow.bean.ChannelBean;
+import com.asdzheng.sweetshow.http.UrlUtil;
 import com.asdzheng.sweetshow.ui.adapter.DiscoverAdapter;
 import com.asdzheng.sweetshow.utils.MeasUtils;
 import com.asdzheng.sweetshow.utils.recyclerview.GridSpacingItemDecoration;
@@ -24,7 +25,6 @@ import butterknife.ButterKnife;
  * Created by Administrator on 2016-1-11.
  */
 public class DiscoverFragment extends Fragment {
-
 
     @Bind(R.id.rv_discover)
     RecyclerView rvDiscover;
@@ -50,46 +50,48 @@ public class DiscoverFragment extends Fragment {
     private void initList() {
         ChannelBean channel = new ChannelBean();
         channel.setChannelName("性感");
+        channel.setChannelUrl(UrlUtil.SEXY_CHANNEL);
         channel.setChannelPhoto("http://h.hiphotos.baidu.com/baike/w%3D268/sign=c229e77a27a446237ecaa264a0227246/b7003af33a87e9509a216e6c17385343fbf2b4f8.jpg");
 
         ChannelBean channel1 = new ChannelBean();
-        channel.setChannelName("美女");
-        channel.setChannelPhoto("http://f.hiphotos.baidu.com/baike/c0%3Dbaike150%2C5%2C5%2C150%2C50/sign=d5412780ad4bd11310c0bf603bc6cf6a/2f738bd4b31c8701bc5f7115277f9e2f0608ff5c.jpg");
+        channel1.setChannelName("美女");
+        channel1.setChannelUrl(UrlUtil.BEAUTY_CHANNEL);
+        channel1.setChannelPhoto("http://h.hiphotos.baidu.com/baike/w%3D268/sign=c229e77a27a446237ecaa264a0227246/b7003af33a87e9509a216e6c17385343fbf2b4f8.jpg");
 
         ChannelBean channe2 = new ChannelBean();
-        channel.setChannelName("美景");
-        channel.setChannelPhoto("http://h.hiphotos.baidu.com/baike/w%3D268/sign=c229e77a27a446237ecaa264a0227246/b7003af33a87e9509a216e6c17385343fbf2b4f8.jpg");
+        channe2.setChannelName("美景");
+        channe2.setChannelPhoto("http://h.hiphotos.baidu.com/baike/w%3D268/sign=c229e77a27a446237ecaa264a0227246/b7003af33a87e9509a216e6c17385343fbf2b4f8.jpg");
 
         ChannelBean channe3 = new ChannelBean();
-        channel.setChannelName("建筑");
-        channel.setChannelPhoto("http://h.hiphotos.baidu.com/baike/w%3D268/sign=c229e77a27a446237ecaa264a0227246/b7003af33a87e9509a216e6c17385343fbf2b4f8.jpg");
+        channe3.setChannelName("建筑");
+        channe3.setChannelPhoto("http://h.hiphotos.baidu.com/baike/w%3D268/sign=c229e77a27a446237ecaa264a0227246/b7003af33a87e9509a216e6c17385343fbf2b4f8.jpg");
 
         ChannelBean channe4 = new ChannelBean();
-        channel.setChannelName("建筑");
-        channel.setChannelPhoto("http://h.hiphotos.baidu.com/baike/w%3D268/sign=c229e77a27a446237ecaa264a0227246/b7003af33a87e9509a216e6c17385343fbf2b4f8.jpg");
+        channe4.setChannelName("建筑");
+        channe4.setChannelPhoto("http://h.hiphotos.baidu.com/baike/w%3D268/sign=c229e77a27a446237ecaa264a0227246/b7003af33a87e9509a216e6c17385343fbf2b4f8.jpg");
 
         ChannelBean channe5 = new ChannelBean();
-        channel.setChannelName("建筑");
-        channel.setChannelPhoto("http://h.hiphotos.baidu.com/baike/w%3D268/sign=c229e77a27a446237ecaa264a0227246/b7003af33a87e9509a216e6c17385343fbf2b4f8.jpg");
+        channe5.setChannelName("建筑");
+        channe5.setChannelPhoto("http://h.hiphotos.baidu.com/baike/w%3D268/sign=c229e77a27a446237ecaa264a0227246/b7003af33a87e9509a216e6c17385343fbf2b4f8.jpg");
 
         ChannelBean channe6 = new ChannelBean();
-        channel.setChannelName("建筑");
-        channel.setChannelPhoto("http://h.hiphotos.baidu.com/baike/w%3D268/sign=c229e77a27a446237ecaa264a0227246/b7003af33a87e9509a216e6c17385343fbf2b4f8.jpg");
+        channe6.setChannelName("建筑");
+        channe6.setChannelPhoto("http://h.hiphotos.baidu.com/baike/w%3D268/sign=c229e77a27a446237ecaa264a0227246/b7003af33a87e9509a216e6c17385343fbf2b4f8.jpg");
 
         ChannelBean channe7 = new ChannelBean();
-        channel.setChannelName("建筑");
-        channel.setChannelPhoto("http://h.hiphotos.baidu.com/baike/w%3D268/sign=c229e77a27a446237ecaa264a0227246/b7003af33a87e9509a216e6c17385343fbf2b4f8.jpg");
+        channe7.setChannelName("建筑");
+        channe7.setChannelPhoto("http://h.hiphotos.baidu.com/baike/w%3D268/sign=c229e77a27a446237ecaa264a0227246/b7003af33a87e9509a216e6c17385343fbf2b4f8.jpg");
 
 
         channels = new ArrayList<>();
         channels.add(channel);
-        channels.add(channel);
-        channels.add(channel);
-        channels.add(channel);
-        channels.add(channel);
-        channels.add(channel);
-        channels.add(channel);
-        channels.add(channel);
+        channels.add(channel1);
+        channels.add(channe2);
+        channels.add(channe3);
+        channels.add(channe4);
+        channels.add(channe5);
+        channels.add(channe6);
+        channels.add(channe7);
     }
 
     private void setUpRecyclerView() {
