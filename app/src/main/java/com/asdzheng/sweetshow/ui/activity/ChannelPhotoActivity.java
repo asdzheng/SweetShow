@@ -15,7 +15,6 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.Volley;
 import com.asdzheng.sweetshow.R;
-import com.asdzheng.sweetshow.bean.ChannelBean;
 import com.asdzheng.sweetshow.bean.NewChannelInfoDetailDto;
 import com.asdzheng.sweetshow.bean.NewChannelInfoDto;
 import com.asdzheng.sweetshow.http.GsonRequest;
@@ -168,13 +167,13 @@ public class ChannelPhotoActivity extends BaseActivity implements WaveSwipeRefre
 
     @Override
     protected void initData(Bundle savedInstanceState) {
-        ChannelBean channel = (ChannelBean) getIntent().getSerializableExtra("channel");
-        nextStr = channel.getChannelUrl();
+//        ChannelBean channel = (ChannelBean) getIntent().getSerializableExtra("channel");
+//        nextStr = channel.getChannelUrl();
 
         setSupportActionBar(toolbarChannelPhoto);
         getSupportActionBar().setDisplayShowTitleEnabled(false);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        toolbarChannelPhoto.setTitle(channel.getChannelName());
+//        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        toolbarChannelPhoto.setTitle("sexy");
 
         queue = Volley.newRequestQueue(this);
         list = new ArrayList<>();

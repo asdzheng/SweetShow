@@ -25,8 +25,8 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
         TAG = AspectRatioLayoutManager.class.getSimpleName();
     }
 
-    public AspectRatioLayoutManager(final AspectRatioLayoutSizeCalculator.SizeCalculatorDelegate sizeCalculatorDelegate) {
-        this.mSizeCalculator = new AspectRatioLayoutSizeCalculator(sizeCalculatorDelegate);
+    public AspectRatioLayoutManager(AspectRatioLayoutSizeCalculator.SizeCalculatorDelegate sizeCalculatorDelegate) {
+        mSizeCalculator = new AspectRatioLayoutSizeCalculator(sizeCalculatorDelegate);
     }
 
     private int getContentHeight() {
@@ -37,55 +37,55 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
         return getWidth() - getPaddingLeft() - getPaddingRight();
     }
 
-    private int preFillGrid(final Direction direction, final int dy, final int n2, final RecyclerView.Recycler recycler, final RecyclerView.State state) {
-        final int firstChildPositionForRow = this.mSizeCalculator.getFirstChildPositionForRow(this.mFirstVisibleRow);
+    private int preFillGrid(Direction direction, int dy, int childDecorateTop, RecyclerView.Recycler recycler, RecyclerView.State state) {
+        int firstChildPositionForRow = mSizeCalculator.getFirstChildPositionForRow(mFirstVisibleRow);
 //        LogUtil.i(TAG, "mFirstVisibleRow = " + mFirstVisibleRow  + " | firstChildPositionForRow = " + firstChildPositionForRow+ "| mFirstVisiblePosition = " + mFirstVisiblePosition) ;
-        final SparseArray sparseArray = new SparseArray(getChildCount());
-        final int paddingLeft = getPaddingLeft();
-        int decoratedTop = n2 + getPaddingTop();
+        SparseArray sparseArray = new SparseArray(getChildCount());
+        int paddingLeft = getPaddingLeft();
+        int decoratedTop = childDecorateTop + getPaddingTop();
         if (getChildCount() != 0) {
             decoratedTop = getDecoratedTop(getChildAt(0));
-            if (this.mFirstVisiblePosition != firstChildPositionForRow) {
+            if (mFirstVisiblePosition != firstChildPositionForRow) {
                 switch (direction) {
                     case UP:
-                        decoratedTop -= this.mSizeCalculator.sizeForChildAtPosition(-1 + this.mFirstVisiblePosition).getHeight();
+                        decoratedTop -= mSizeCalculator.sizeForChildAtPosition(-1 + mFirstVisiblePosition).getHeight();
                         LogUtil.i(TAG, "UP = " + decoratedTop);
                         break;
                     case DOWN:
-                        decoratedTop += this.mSizeCalculator.sizeForChildAtPosition(this.mFirstVisiblePosition).getHeight();
+                        decoratedTop += mSizeCalculator.sizeForChildAtPosition(mFirstVisiblePosition).getHeight();
                         LogUtil.i(TAG, "DOWN = " + decoratedTop);
                         break;
                 }
             }
             for (int i = 0; i < getChildCount(); ++i) {
-                sparseArray.put(i + this.mFirstVisiblePosition, (Object) getChildAt(i));
+                sparseArray.put(i + mFirstVisiblePosition, (Object) getChildAt(i));
             }
             for (int j = 0; j < sparseArray.size(); ++j) {
                 detachView((View) sparseArray.valueAt(j));
             }
         }
-        this.mFirstVisiblePosition = firstChildPositionForRow;
+        mFirstVisiblePosition = firstChildPositionForRow;
         int childPaddingLeft = paddingLeft;
         int childPaddingTop = decoratedTop;
 
         for (int mFirstVisiblePosition = this.mFirstVisiblePosition; mFirstVisiblePosition >= 0 && mFirstVisiblePosition < state.getItemCount(); ++mFirstVisiblePosition) {
-            final Size sizeForChildAtPosition = this.mSizeCalculator.sizeForChildAtPosition(mFirstVisiblePosition);
+            Size sizeForChildAtPosition = mSizeCalculator.sizeForChildAtPosition(mFirstVisiblePosition);
             //是否加上下一个view就超过屏幕的宽度
-            if (childPaddingLeft + sizeForChildAtPosition.getWidth() > this.getContentWidth()) {
+            if (childPaddingLeft + sizeForChildAtPosition.getWidth() > getContentWidth()) {
                 childPaddingLeft = paddingLeft;
-                childPaddingTop += this.mSizeCalculator.sizeForChildAtPosition(mFirstVisiblePosition - 1).getHeight();
+                childPaddingTop += mSizeCalculator.sizeForChildAtPosition(mFirstVisiblePosition - 1).getHeight();
             }
             int n5 = 0;
             switch (direction) {
                 default:
-                    if (childPaddingTop >= this.getContentHeight()) {
+                    if (childPaddingTop >= getContentHeight()) {
                         n5 = 1;
                         break;
                     }
                     n5 = 0;
                     break;
                 case DOWN:
-                    if (childPaddingTop >= dy + this.getContentHeight()) {
+                    if (childPaddingTop >= dy + getContentHeight()) {
                         n5 = 1;
                     } else {
                         n5 = 0;
@@ -93,20 +93,20 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
                     break;
             }
 
-//            LogUtil.i(TAG, "childPaddingTop = " + childPaddingTop + " | dy = " + dy + " | getContentHeight = " + getContentHeight() + " | n5 = " + n5);
+            LogUtil.i(TAG, "childPaddingTop = " + childPaddingTop + " | dy = " + dy + " | getContentHeight = " + getContentHeight() + " | n5 = " + n5);
 
             if (n5 != 0) {
                 break;
             }
-            final View view = (View) sparseArray.get(mFirstVisiblePosition);
+            View view = (View) sparseArray.get(mFirstVisiblePosition);
             if (view == null) {
-                final View viewForPosition = recycler.getViewForPosition(mFirstVisiblePosition);
-//               LogUtil.i(TAG, "view == null mFirstVisiblePosition = " + mFirstVisiblePosition + " | sizeForChildAtPosition = " + sizeForChildAtPosition );
+                View viewForPosition = recycler.getViewForPosition(mFirstVisiblePosition);
+                LogUtil.i(TAG, "view == null mFirstVisiblePosition = " + mFirstVisiblePosition + " | sizeForChildAtPosition = " + sizeForChildAtPosition);
                 addView(viewForPosition);
                 measureChildWithMargins(viewForPosition, 0, 0);
                 layoutDecorated(viewForPosition, childPaddingLeft, childPaddingTop, childPaddingLeft + sizeForChildAtPosition.getWidth(), childPaddingTop + sizeForChildAtPosition.getHeight());
             } else {
-//                LogUtil.i(TAG, "view != null mFirstVisiblePosition = " + mFirstVisiblePosition + " | sizeForChildAtPosition = " + sizeForChildAtPosition );
+                LogUtil.i(TAG, "view != null mFirstVisiblePosition = " + mFirstVisiblePosition + " | sizeForChildAtPosition = " + sizeForChildAtPosition);
                 attachView(view);
                 sparseArray.remove(mFirstVisiblePosition);
             }
@@ -115,7 +115,7 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
         for (int k = 0; k < sparseArray.size(); ++k) {
             recycler.recycleView((View) sparseArray.valueAt(k));
         }
-        final int childCount = getChildCount();
+        int childCount = getChildCount();
         int bottom = 0;
         if (childCount > 0) {
             bottom = getChildAt(-1 + getChildCount()).getBottom();
@@ -132,7 +132,7 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
     }
 
     public int findFirstVisibleItemPosition() {
-        return this.mFirstVisiblePosition;
+        return mFirstVisiblePosition;
     }
 
     public int getmLastVisiblePosition() {
@@ -145,50 +145,57 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
     }
 
     public AspectRatioLayoutSizeCalculator getSizeCalculator() {
-        return this.mSizeCalculator;
+        return mSizeCalculator;
     }
 
     @Override
-    public void onAdapterChanged(final RecyclerView.Adapter adapter, final RecyclerView.Adapter adapter2) {
+    public void onAdapterChanged(RecyclerView.Adapter adapter, RecyclerView.Adapter adapter2) {
         removeAllViews();
-        this.mSizeCalculator.reset();
+        mSizeCalculator.reset();
     }
 
     @Override
-    public void onLayoutChildren(final RecyclerView.Recycler recycler, final RecyclerView.State state) {
+    public void onLayoutChildren(RecyclerView.Recycler recycler, RecyclerView.State state) {
         if (getItemCount() == 0) {
             detachAndScrapAttachedViews(recycler);
             return;
         }
-        this.mSizeCalculator.setContentWidth(this.getContentWidth());
-        this.mSizeCalculator.reset();
+
+        LogUtil.i(TAG, "onLayoutChildren = getChildCount : " + getChildCount() + " | State : " + state);
+
+        mSizeCalculator.setContentWidth(getContentWidth());
+        mSizeCalculator.reset();
         int decoratedTop;
         if (getChildCount() == 0) {
-            this.mFirstVisiblePosition = 0;
-            this.mFirstVisibleRow = 0;
+            mFirstVisiblePosition = 0;
+            mFirstVisibleRow = 0;
             decoratedTop = 0;
         } else {
-            final View child = getChildAt(0);
-            if (this.mForceClearOffsets) {
-                this.mForceClearOffsets = false;
+            View child = getChildAt(0);
+            if (mForceClearOffsets) {
+                mForceClearOffsets = false;
                 decoratedTop = 0;
             } else {
+                //代替getTop()获取子视图的 top 边缘
                 decoratedTop = getDecoratedTop(child);
             }
         }
+        //解绑之前所有绑定在一起的view进recycle bin
         detachAndScrapAttachedViews(recycler);
-        this.preFillGrid(Direction.NONE, 0, decoratedTop, recycler, state);
+        preFillGrid(Direction.NONE, 0, decoratedTop, recycler, state);
     }
 
     @Override
-    public void scrollToPosition(final int n) {
+    public void scrollToPosition(int n) {
+        LogUtil.i(TAG, "scrollToPosition n :  " + n);
+
         if (n >= getItemCount()) {
             Log.w(AspectRatioLayoutManager.TAG, String.format("Cannot scroll to %d, item count is %d", n, getItemCount()));
             return;
         }
-        this.mForceClearOffsets = true;
-        this.mFirstVisibleRow = this.mSizeCalculator.getRowForChildPosition(n);
-        this.mFirstVisiblePosition = this.mSizeCalculator.getFirstChildPositionForRow(this.mFirstVisibleRow);
+        mForceClearOffsets = true;
+        mFirstVisibleRow = mSizeCalculator.getRowForChildPosition(n);
+        mFirstVisiblePosition = mSizeCalculator.getFirstChildPositionForRow(mFirstVisibleRow);
         requestLayout();
     }
 
@@ -206,36 +213,36 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
      * <code>Math.abs(result)</code> may be less than dy if a boundary was reached.
      */
     @Override
-    public int scrollVerticallyBy(final int dy, final RecyclerView.Recycler recycler, final RecyclerView.State state) {
+    public int scrollVerticallyBy(int dy, RecyclerView.Recycler recycler, RecyclerView.State state) {
         if (getChildCount() == 0 || dy == 0) {
             return 0;
         }
-        final View child = getChildAt(0);
-        final View child2 = getChildAt(-1 + getChildCount());
-        int n2 = this.getContentHeight();
+        View child = getChildAt(0);
+        View child2 = getChildAt(-1 + getChildCount());
+        int n2 = getContentHeight();
         if (dy > 0) {
             boolean b;
-            if (1 + this.mFirstVisiblePosition + getChildCount() >= getItemCount()) {
+            if (1 + mFirstVisiblePosition + getChildCount() >= getItemCount()) {
                 b = true;
             } else {
                 b = false;
             }
-            if (b && n2 <= this.getContentHeight()) {
-                this.preFillGrid(Direction.DOWN, Math.abs(dy), 0, recycler, state);
-                n2 = getDecoratedBottom(getChildAt(-1 + getChildCount())) - this.getContentHeight();
+            if (b && n2 <= getContentHeight()) {
+                preFillGrid(Direction.DOWN, Math.abs(dy), 0, recycler, state);
+                n2 = getDecoratedBottom(getChildAt(-1 + getChildCount())) - getContentHeight();
             } else if (getDecoratedBottom(child) - dy <= 0) {
-                ++this.mFirstVisibleRow;
-                n2 = this.preFillGrid(Direction.DOWN, Math.abs(dy), 0, recycler, state);
-            } else if (getDecoratedBottom(child2) - dy < this.getContentHeight()) {
-                n2 = this.preFillGrid(Direction.DOWN, Math.abs(dy), 0, recycler, state);
+                ++mFirstVisibleRow;
+                n2 = preFillGrid(Direction.DOWN, Math.abs(dy), 0, recycler, state);
+            } else if (getDecoratedBottom(child2) - dy < getContentHeight()) {
+                n2 = preFillGrid(Direction.DOWN, Math.abs(dy), 0, recycler, state);
             }
-        } else if (this.mFirstVisibleRow == 0 && getDecoratedTop(child) - dy >= 0) {
+        } else if (mFirstVisibleRow == 0 && getDecoratedTop(child) - dy >= 0) {
             n2 = -getDecoratedTop(child);
         } else if (getDecoratedTop(child) - dy >= 0) {
-            --this.mFirstVisibleRow;
-            n2 = this.preFillGrid(Direction.UP, Math.abs(dy), 0, recycler, state);
-        } else if (getDecoratedTop(child2) - dy > this.getContentHeight()) {
-            n2 = this.preFillGrid(Direction.UP, Math.abs(dy), 0, recycler, state);
+            --mFirstVisibleRow;
+            n2 = preFillGrid(Direction.UP, Math.abs(dy), 0, recycler, state);
+        } else if (getDecoratedTop(child2) - dy > getContentHeight()) {
+            n2 = preFillGrid(Direction.UP, Math.abs(dy), 0, recycler, state);
         }
         int n3;
         if (Math.abs(dy) > n2) {
@@ -247,8 +254,8 @@ public class AspectRatioLayoutManager extends RecyclerView.LayoutManager {
         return n3;
     }
 
-    public void setMaxRowHeight(final int maxRowHeight) {
-        this.mSizeCalculator.setMaxRowHeight(maxRowHeight);
+    public void setMaxRowHeight(int maxRowHeight) {
+        mSizeCalculator.setMaxRowHeight(maxRowHeight);
     }
 
     private enum Direction {

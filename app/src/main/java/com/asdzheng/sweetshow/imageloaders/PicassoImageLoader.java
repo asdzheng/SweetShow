@@ -36,7 +36,7 @@ public class PicassoImageLoader implements ImageLoader {
             ChannelImageView channelImageView = (ChannelImageView) imageView;
 
 //            Picasso.with(context).load(s).tag(context).into(imageView);
-            LogUtil.w("PicassoImageLoader", "photoView.getSize() " + channelImageView.getWidth() + " | " + channelImageView.getHeight());
+//            LogUtil.w("PicassoImageLoader", "photoView.getSize() " + channelImageView.getWidth() + " | " + channelImageView.getHeight());
 
             Picasso.with(context).load(s).tag(context).resize(channelImageView.getWidth(), channelImageView.getHeight()).into(imageView);
 

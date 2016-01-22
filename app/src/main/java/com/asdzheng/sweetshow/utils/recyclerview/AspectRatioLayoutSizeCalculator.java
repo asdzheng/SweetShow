@@ -1,10 +1,13 @@
 package com.asdzheng.sweetshow.utils.recyclerview;
 
+import com.asdzheng.sweetshow.utils.LogUtil;
+
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 /**
+ * 纵横比计算工具类
  * Created by asdzheng on 2015/12/26.
  */
 public class AspectRatioLayoutSizeCalculator {
@@ -14,109 +17,132 @@ public class AspectRatioLayoutSizeCalculator {
     private static final String TAG;
     private static int mMaxRowHeight;
     private int mContentWidth;
+    //每一行第一个可见的View的position
     private List<Integer> mFirstChildPositionForRow;
+    //记录每个child在哪一行
     private List<Integer> mRowForChildPosition;
+    //view的横纵比
     private SizeCalculatorDelegate mSizeCalculatorDelegate;
+    //记录每个childView的宽高
     private List<Size> mSizeForChildAtPosition;
 
     static {
         TAG = AspectRatioLayoutSizeCalculator.class.getName();
+        //每个view的最大高度
         AspectRatioLayoutSizeCalculator.mMaxRowHeight = 600;
     }
 
-    public AspectRatioLayoutSizeCalculator(final SizeCalculatorDelegate mSizeCalculatorDelegate) {
-        this.mContentWidth = -1;
+
+    public AspectRatioLayoutSizeCalculator(SizeCalculatorDelegate mSizeCalculatorDelegate) {
+        mContentWidth = -1;
         this.mSizeCalculatorDelegate = mSizeCalculatorDelegate;
-        this.mSizeForChildAtPosition = new ArrayList<Size>();
-        this.mFirstChildPositionForRow = new ArrayList<Integer>();
-        this.mRowForChildPosition = new ArrayList<Integer>();
+        mSizeForChildAtPosition = new ArrayList<Size>();
+        mFirstChildPositionForRow = new ArrayList<Integer>();
+        mRowForChildPosition = new ArrayList<Integer>();
     }
 
-    private void computeFirstChildPositionsUpToRow(final int i) {
-        while (i >= this.mFirstChildPositionForRow.size()) {
-            this.computeChildSizesUpToPosition(1 + this.mSizeForChildAtPosition.size());
+    private void computeFirstChildPositionsUpToRow(int row) {
+        while (row >= mFirstChildPositionForRow.size()) {
+            LogUtil.i(TAG, "row = " + row + " | mSizeForChildAtPosition.size()" + mSizeForChildAtPosition.size());
+
+            computeChildSizesUpToPosition( mSizeForChildAtPosition.size());
         }
     }
 
-    public void computeChildSizesUpToPosition(final int n) {
-        if (this.mContentWidth == -1) {
+    public void computeChildSizesUpToPosition(int n) {
+        if (mContentWidth == -1) {
             throw new RuntimeException("Invalid content width. Did you forget to set it?");
         }
-        if (this.mSizeCalculatorDelegate == null) {
+        if (mSizeCalculatorDelegate == null) {
             throw new RuntimeException("Size calculator delegate is missing. Did you forget to set it?");
         }
-        final int size = this.mSizeForChildAtPosition.size();
-        int n2;
-        if (this.mRowForChildPosition.size() > 0) {
-            n2 = 1 + this.mRowForChildPosition.get(-1 + this.mRowForChildPosition.size());
+        //已经计算过的子View的size
+        int haveComputeChildSize = mSizeForChildAtPosition.size();
+
+        int firstPositionNotRow;
+        if (mRowForChildPosition.size() > 0) {
+            firstPositionNotRow = 1 + mRowForChildPosition.get(-1 + mRowForChildPosition.size());
+        } else {
+            firstPositionNotRow = 0;
         }
-        else {
-            n2 = 0;
-        }
-        double n3 = 0.0;
-        int n4 = Integer.MAX_VALUE;
-        final ArrayList<Double> list = new ArrayList<Double>();
-        for (int n5 = size; n5 < n || n4 > AspectRatioLayoutSizeCalculator.mMaxRowHeight; ++n5) {
-            final double aspectRatioForIndex = this.mSizeCalculatorDelegate.aspectRatioForIndex(n5);
-            n3 += aspectRatioForIndex;
+        //横纵比
+        double aspectRatioWidth = 0.0;
+
+        int rowHeight = Integer.MAX_VALUE;
+        ArrayList<Double> list = new ArrayList<Double>();
+
+        while ( rowHeight > AspectRatioLayoutSizeCalculator.mMaxRowHeight) {
+            double aspectRatioForIndex = mSizeCalculatorDelegate.aspectRatioForIndex(haveComputeChildSize);
+
+            aspectRatioWidth = aspectRatioWidth + aspectRatioForIndex;
+
             list.add(aspectRatioForIndex);
-            n4 = (int)Math.ceil(this.mContentWidth / n3);
-            if (n4 <= AspectRatioLayoutSizeCalculator.mMaxRowHeight) {
-                this.mFirstChildPositionForRow.add(1 + (n5 - list.size()));
-                int mContentWidth = this.mContentWidth;
-                final Iterator<Double> iterator = list.iterator();
+
+            rowHeight = (int)Math.ceil(mContentWidth / aspectRatioWidth);
+            if (rowHeight <= mMaxRowHeight) {
+                mFirstChildPositionForRow.add(1 + (haveComputeChildSize - list.size()));
+                int leftContentWidth = this.mContentWidth;
+                Iterator<Double> iterator = list.iterator();
                 while (iterator.hasNext()) {
-                    final int min = Math.min(mContentWidth, (int)Math.ceil(n4 * iterator.next()));
-                    this.mSizeForChildAtPosition.add(new Size(min, n4));
-                    this.mRowForChildPosition.add(n2);
-                    mContentWidth -= min;
+                    //取剩余的宽度和原本缩小的宽度较小值
+                    int min = Math.min(leftContentWidth, (int)Math.ceil(rowHeight * iterator.next()));
+                    mSizeForChildAtPosition.add(new Size(min, rowHeight));
+                    mRowForChildPosition.add(firstPositionNotRow);
+                    leftContentWidth = leftContentWidth - min;
                 }
                 list.clear();
-                n3 = 0.0;
-                ++n2;
+                aspectRatioWidth = 0.0;
+                ++firstPositionNotRow;
             }
+            haveComputeChildSize ++;
         }
     }
 
-    int getFirstChildPositionForRow(final int n) {
-        if (n >= this.mFirstChildPositionForRow.size()) {
-            this.computeFirstChildPositionsUpToRow(n);
+    /**
+     * 得到某一列第一个View的position
+     * @param row
+     * @return
+     */
+    int getFirstChildPositionForRow(int row) {
+        //如果list里没有row行的数据，就需要重新计算
+        if (row >= mFirstChildPositionForRow.size()) {
+            computeFirstChildPositionsUpToRow(row);
         }
-        return this.mFirstChildPositionForRow.get(n);
+        return mFirstChildPositionForRow.get(row);
     }
 
-    int getRowForChildPosition(final int n) {
-        if (n >= this.mRowForChildPosition.size()) {
-            this.computeChildSizesUpToPosition(n);
+    int getRowForChildPosition(int n) {
+        if (n >= mRowForChildPosition.size()) {
+            computeChildSizesUpToPosition(n);
         }
-        return this.mRowForChildPosition.get(n);
+        return mRowForChildPosition.get(n);
     }
 
     void reset() {
-        this.mSizeForChildAtPosition.clear();
-        this.mFirstChildPositionForRow.clear();
-        this.mRowForChildPosition.clear();
+        mSizeForChildAtPosition.clear();
+        mFirstChildPositionForRow.clear();
+        mRowForChildPosition.clear();
     }
 
-    public void setContentWidth(final int mContentWidth) {
+    public void setContentWidth(int mContentWidth) {
         if (this.mContentWidth != mContentWidth) {
             this.mContentWidth = mContentWidth;
-            this.reset();
+            reset();
         }
     }
 
-    public void setMaxRowHeight(final int mMaxRowHeight) {
-        if (AspectRatioLayoutSizeCalculator.mMaxRowHeight != mMaxRowHeight) {
-            AspectRatioLayoutSizeCalculator.mMaxRowHeight = mMaxRowHeight;
-            this.reset();
+    public void setMaxRowHeight(int mMaxRowHeight) {
+        if (this.mMaxRowHeight != mMaxRowHeight) {
+            this.mMaxRowHeight = mMaxRowHeight;
+            reset();
         }
     }
 
-    Size sizeForChildAtPosition(final int n) {
-        if (n >= this.mSizeForChildAtPosition.size()) {
-            this.computeChildSizesUpToPosition(n);
+    Size sizeForChildAtPosition(int n) {
+        if (n >= mSizeForChildAtPosition.size()) {
+            computeChildSizesUpToPosition(n);
         }
-        return this.mSizeForChildAtPosition.get(n);
+        return mSizeForChildAtPosition.get(n);
     }
 
     public interface SizeCalculatorDelegate

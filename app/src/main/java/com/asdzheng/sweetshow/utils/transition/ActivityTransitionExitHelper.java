@@ -12,7 +12,6 @@ import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
-import com.asdzheng.sweetshow.utils.LogUtil;
 import com.asdzheng.sweetshow.utils.recyclerview.Size;
 
 import uk.co.senab.photoview.PhotoView;
@@ -124,7 +123,7 @@ public class ActivityTransitionExitHelper {
 
 //                        topDelta = thumbnailTop - toView.getTop();
 //                        topDelta = topDelta - ((toView.getHeight() - size.getHeight()) / 2) * heightDelta;
-                        LogUtil.i(TAG, size.getHeight() + " topDelta = " + topDelta);
+//                        LogUtil.i(TAG, size.getHeight() + " topDelta = " + topDelta);
                     } else {
 //                        heightDelta = (float) thumbnailHeight / toView.getDisplayRect().height();
                         setScaleHeight(toView.getDisplayRect().height());
@@ -133,7 +132,7 @@ public class ActivityTransitionExitHelper {
 //                        topDelta = thumbnailTop - toView.getTop();
 //                        topDelta = topDelta - ((toView.getHeight() - toView.getDisplayRect().height()) / 2) * heightDelta;
 
-                        LogUtil.w(TAG, " topDelta = " + topDelta + "toView Height " + toView.getDisplayRect().height());
+//                        LogUtil.w(TAG, " topDelta = " + topDelta + "toView Height " + toView.getDisplayRect().height());
                     }
 
                     runEnterAnimation();
@@ -174,8 +173,8 @@ public class ActivityTransitionExitHelper {
 
     public void runExitAnimation(final Runnable exit) {
 
-        LogUtil.i(TAG, "toView Height " +
-                toView.getDisplayRect().height() + " | scale " + toView.getScale());
+//        LogUtil.i(TAG, "toView Height " +
+//                toView.getDisplayRect().height() + " | scale " + toView.getScale());
 
         setScaleHeight(toView.getDisplayRect().height() / toView.getScale());
         setTranslationY(toView.getDisplayRect().height() / toView.getScale());
